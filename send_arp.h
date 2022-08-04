@@ -101,6 +101,29 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                 }
             }
         }
+        else if (if_same_mac(pkt->eth_.smac_, gate_mac))
+        {
+            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            {
+                printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
+                if (pkt->eth_.type_ == htons(EthHdr::Arp))
+                {
+                }
+                else
+                {
+                    copy_mac(victim_mac, pkt->eth_.dmac_);
+                    copy_mac(attacker_mac, pkt->eth_.smac_);
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                    if (res != 0)
+                    {
+                        printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                        return -1;
+                    }
+
+                    printf("sent!");
+                }
+            }
+        }
     }
     return 0;
 }
