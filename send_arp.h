@@ -96,7 +96,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                     for (int i = 0; i < 100; i++)
                     {
 
-                        int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&packet), header->len);
+                        int res = pcap_sendpacket(pcap, packet, header->len);
                         if (res != 0)
                         {
                             printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
