@@ -91,11 +91,13 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                     {
                         printf("%02x ", pkt[i]);
                     }
+                    printf("\n");
                     copy_mac(gate_mac, pkt->eth_.dmac_);
                     for (int i = 0; i < header->len; i++)
                     {
                         printf("%02x ", pkt[i]);
                     }
+                    printf("\n");
                     int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&pkt), header->len);
                     if (res != 0)
                     {
