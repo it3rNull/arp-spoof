@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	my_mac(dev, attacker_mac);
 	s_getIpAddress(dev, attacker_ip);
 	char errbuf[PCAP_ERRBUF_SIZE];
-	pcap_t *pcap = pcap_open_live(dev, BUFSIZ, 1, 1, errbuf);
+	pcap_t *pcap = pcap_open_live(dev, 65536, 1, 1, errbuf);
 	if (pcap == nullptr)
 	{
 		fprintf(stderr, "couldn't open device %s(%s)\n", dev, errbuf);
