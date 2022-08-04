@@ -88,7 +88,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                 else
                 {
                     copy_mac(gate_mac, pkt->eth_.dmac_);
-                    int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&packet), header->len);
+                    int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&pkt), header->len);
                     if (res != 0)
                     {
                         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
