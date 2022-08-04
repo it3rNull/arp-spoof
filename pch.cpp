@@ -51,3 +51,17 @@ void print_mac(u_int8_t *mac)
     }
     printf("\n");
 }
+
+bool if_same_mac(u_int8_t *mac1, u_int8_t *mac2)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (mac1[i] == mac2[i])
+            ;
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}

@@ -60,13 +60,15 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac)
     return 0;
 }
 
-int relay(const char *dev, pcap_t *pcap)
+int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victim_mac)
 {
     while (true)
     {
         struct pcap_pkthdr *header;
         const u_char *packet;
         int res = pcap_next_ex(pcap, &header, &packet);
+        EthArpPacket *pkt;
+        pkt = (EthArpPacket *)packet;
         if (res == 0)
             continue;
         if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
@@ -74,7 +76,12 @@ int relay(const char *dev, pcap_t *pcap)
             printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
             break;
         }
-        printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
+
+        if (if_same_mac(pkt->eth_.smac_, victim_mac))
+        {
+            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+                printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
+        }
     }
     return 0;
 }

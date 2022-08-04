@@ -20,3 +20,4 @@ void copy_ip(u_int8_t *src, u_int8_t *dst);
 void print_ip(u_int8_t *ip);
 void copy_mac(u_int8_t *src, u_int8_t *dst);
 void print_mac(u_int8_t *mac);
+bool if_same_mac(u_int8_t *mac1, u_int8_t *mac2);
