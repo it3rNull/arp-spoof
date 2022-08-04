@@ -100,13 +100,17 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                     //     printf("%02x ", payload[i]);
                     // }
                     // printf("\n");
-                    int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&payload), header->len);
-                    if (res != 0)
+                    while (1)
                     {
-                        printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                        return -1;
+
+                        int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&payload), header->len);
+                        if (res != 0)
+                        {
+                            printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                            return -1;
+                        }
+                        printf("sent !\n");
                     }
-                    printf("sent !\n");
                 }
             }
         }
