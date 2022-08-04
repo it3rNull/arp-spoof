@@ -65,3 +65,17 @@ bool if_same_mac(u_int8_t *mac1, u_int8_t *mac2)
     }
     return true;
 }
+
+bool if_same_ip(u_int8_t *ip1, u_int8_t *ip2)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (ip1[i] == ip2[i])
+            ;
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}
