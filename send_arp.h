@@ -82,7 +82,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
         {
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
             {
-                printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
+                // printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
                 if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, victim_mac)) && (if_same_mac(pkt->arp_.tmac_, attacker_mac)))
                 {
                     printf("where is gate?\n");
@@ -105,10 +105,10 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
         {
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
             {
-                printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
+                // printf("%u bytes captured. Actual length: %u\n", header->caplen, header->len); //헤더에서 캡쳐된 패킷 크기 가져와서 출력
                 if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, gate_mac)))
                 {
-                    printf("where is gate?\n");
+                    printf("where is victim?\n");
                     request(dev, pcap, gate_mac, attacker_mac, attacker_mac, victim_ip, gate_mac, gate_ip, 1);
                 }
                 else
