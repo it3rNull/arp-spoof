@@ -88,13 +88,16 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                 }
                 else
                 {
-                    copy_mac(gate_mac, pkt->eth_.dmac_);
-                    for (int i = 0; i < header->len; i++)
+                    printf("read packet : ");
+                    for (int i = 0; i < 8; i++)
                     {
                         printf("%02x ", packet[i]);
                     }
+                    copy_mac(gate_mac, pkt->eth_.dmac_);
+                    printf("\n");
                     payload = (u_char *)pkt;
-                    for (int i = 0; i < header->len; i++)
+                    printf("modified packet : ");
+                    for (int i = 0; i < 8; i++)
                     {
                         printf("%02x ", payload[i]);
                     }
