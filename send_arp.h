@@ -63,13 +63,13 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
 {
     struct pcap_pkthdr *header;
     const u_char *packet;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
         int res = pcap_next_ex(pcap, &header, &packet);
         if (res != 1)
         {
             printf("error!\n");
-            return -1;
+            return 0;
         }
         EthArpPacket *arppkt;
         arppkt = (EthArpPacket *)packet;
@@ -79,7 +79,7 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
             break;
         }
     }
-    return 0;
+    return 1;
 }
 
 int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victim_mac, u_int8_t *gate_mac, u_int8_t *victim_ip, u_int8_t *gate_ip)
