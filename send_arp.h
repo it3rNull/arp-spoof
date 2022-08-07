@@ -76,10 +76,11 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
         if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && if_same_ip(arppkt->arp_.sip, ip))
         {
             copy_mac(arppkt->arp_.smac_, mac);
+            return 1;
             break;
         }
     }
-    return 1;
+    return 0;
 }
 
 int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victim_mac, u_int8_t *gate_mac, u_int8_t *victim_ip, u_int8_t *gate_ip)
