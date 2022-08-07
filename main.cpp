@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < 256; i++)
 	{
 		victim[3] = i;
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim, 0);
+		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
 		reply(dev, pcap, victim_mac, victim);
 		print_mac(victim_mac);
 		printf("sender mac addr : ");
