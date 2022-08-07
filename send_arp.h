@@ -69,14 +69,13 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
         if (res != 1)
         {
             printf("error!\n");
-            return 0;
+            return -1;
         }
         EthArpPacket *arppkt;
         arppkt = (EthArpPacket *)packet;
         if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && if_same_ip(arppkt->arp_.sip, ip))
         {
             copy_mac(arppkt->arp_.smac_, mac);
-            return 1;
             break;
         }
     }
