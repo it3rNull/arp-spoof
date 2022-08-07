@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "couldn't open device %s(%s)\n", dev, errbuf);
 		return -1;
 	}
+
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, gate_ip, 0);
 	reply(dev, pcap, gate_mac, gate_ip);
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
@@ -50,6 +51,16 @@ int main(int argc, char *argv[])
 	print_ip(victim_ip);
 	printf("target ip addr : ");
 	print_ip(gate_ip);
+	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, gate_ip, 0);
+	// reply(dev, pcap, gate_mac, gate_ip);
+	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
+	// reply(dev, pcap, victim_mac, victim_ip);
+	// printf("attacker ip addr : ");
+	// print_ip(attacker_ip);
+	// printf("sender ip addr : ");
+	// print_ip(victim_ip);
+	// printf("target ip addr : ");
+	// print_ip(gate_ip);
 
 	printf("attacker mac addr : ");
 	print_mac(attacker_mac);

@@ -63,7 +63,7 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
 {
     struct pcap_pkthdr *header;
     const u_char *packet;
-    while (1)
+    for (int i = 0; i < 10; i++)
     {
         int res = pcap_next_ex(pcap, &header, &packet);
         if (res != 1)
