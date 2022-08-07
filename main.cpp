@@ -43,12 +43,12 @@ int main(int argc, char *argv[])
 
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, gate_ip, 0);
 	reply(dev, pcap, gate_mac, gate_ip);
-	printf("sender mac addr : ");
 	for (int i = 0; i < 256; i++)
 	{
 		victim[3] = i;
 		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
-		reply(dev, pcap, victim_mac, victim);
+		reply(dev, pcap, victim_mac, victim_ip);
+		printf("sender mac addr : ");
 		print_mac(victim_mac);
 	}
 	printf("attacker ip addr : ");
