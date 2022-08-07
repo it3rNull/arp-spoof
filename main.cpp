@@ -43,35 +43,15 @@ int main(int argc, char *argv[])
 
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, gate_ip, 0);
 	reply(dev, pcap, gate_mac, gate_ip);
-	for (int i = 0; i < 256; i++)
-	{
-		victim[3] = i;
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim, 0);
-		if (reply(dev, pcap, victim_mac, victim))
-		{
-			printf("sender ip addr : ");
-			print_ip(victim);
-			printf("sender mac addr : ");
-			print_mac(victim_mac);
-		}
-	}
+	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
+	reply(dev, pcap, victim_mac, victim_ip);
+
 	printf("attacker ip addr : ");
 	print_ip(attacker_ip);
 	printf("sender ip addr : ");
 	print_ip(victim_ip);
 	printf("target ip addr : ");
 	print_ip(gate_ip);
-	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, gate_ip, 0);
-	// reply(dev, pcap, gate_mac, gate_ip);
-	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
-	// reply(dev, pcap, victim_mac, victim_ip);
-	// printf("attacker ip addr : ");
-	// print_ip(attacker_ip);
-	// printf("sender ip addr : ");
-	// print_ip(victim_ip);
-	// printf("target ip addr : ");
-	// print_ip(gate_ip);
-
 	printf("attacker mac addr : ");
 	print_mac(attacker_mac);
 	printf("sender mac addr : ");
