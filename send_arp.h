@@ -110,6 +110,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 // copy_mac(target_mac, pkt->eth_.dmac_);
                 // copy_mac(attacker_mac, pkt->eth_.smac_);
+                printf("relay sender packet");
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 continue;
                 if (res != 0)
@@ -127,6 +128,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 // copy_mac(sender_mac, pkt->eth_.dmac_);
                 // copy_mac(attacker_mac, pkt->eth_.smac_);
+                printf("relay target packet");
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 continue;
                 if (res != 0)
