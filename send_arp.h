@@ -116,6 +116,16 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 copy_mac(attacker_mac, pkt->eth_.smac_);
                 printf("relay sender packet\n");
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                for (int i = 0; i < header->len; i++)
+                {
+                    printf("%c ", pkt[i]);
+                }
+                printf("\n");
+                for (int i = 0; i < header->len; i++)
+                {
+                    printf("%c ", packet[i]);
+                }
+                printf("\n");
                 continue;
                 if (res != 0)
                 {
