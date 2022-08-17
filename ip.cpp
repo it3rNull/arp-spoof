@@ -14,12 +14,12 @@ int s_getIpAddress(const char *ifr, u_int8_t *ip)
         return -1;
     }
     sin = (struct sockaddr_in *)&ifrq.ifr_addr;
-    memcpy(out, (void *)&sin->sin_addr, sizeof(sin->sin_addr));
+    memcpy(ip, (void *)&sin->sin_addr, sizeof(sin->sin_addr));
     close(sockfd);
-    for (int i = 0; i < 4; i++)
-    {
-        ip[i] = out[i];
-    }
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     ip[i] = out[i];
+    // }
 
     return 4;
 }

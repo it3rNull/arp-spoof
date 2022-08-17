@@ -79,32 +79,3 @@ bool if_same_ip(u_int8_t *ip1, u_int8_t *ip2)
     }
     return true;
 }
-
-bool check_http(u_char *payload)
-{
-    if (payload[0] == 0x17)
-    {
-        return true;
-    }
-    else if (payload[0] == 0x47 && payload[1] == 0x45 && payload[2] == 0x54)
-    {
-        return true;
-    }
-    else if (payload[0] == 0x50 && payload[1] == 0x4f && payload[2] == 0x53 && payload[3] == 0x54)
-    {
-        return true;
-    }
-    else
-    {
-
-        return false;
-    }
-}
-
-void copy_payload(char *src, char *dst)
-{
-    for (int i = 0; i < strlen(src); i++)
-    {
-        dst[i] = src[i];
-    }
-}
