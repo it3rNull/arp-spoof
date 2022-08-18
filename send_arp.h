@@ -80,7 +80,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
     {
         struct pcap_pkthdr *header;
         const u_char *packet;
-        u_char *payload;
         int res = pcap_next_ex(pcap, &header, &packet);
         EthArpPacket *pkt;
         pkt = (EthArpPacket *)packet;
@@ -116,7 +115,10 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 copy_mac(attacker_mac, pkt->eth_.smac_);
                 printf("relay sender packet\n");
 
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                for (int i = 0; i < 10; i++)
+                {
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                }
 
                 continue;
                 if (res != 0)
