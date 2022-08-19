@@ -141,23 +141,39 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //단위 1440
                 // 1440 + 34 == 1474
                 printf("sendsize1 : %d\n", sendsize);
-                while (sendsize > 1474)
-                {
-                    ip_pkt->ip_.ip_len = htons(1460);
-                    ip_pkt->ip_.ip_offset = htons((180 * i) | 0b0010000000000000);
-                    memcpy(pkt + 34, data + 1440 * i, 1440);
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, 1474);
-                    if (res != 0)
-                    {
-                        printf("long!!\n");
-                        fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                        return -1;
-                    }
-                    sendsize -= 1440;
-                    i++;
-                }
+                // while (sendsize > 1474)
+                // {
+                //     ip_pkt->ip_.ip_len = htons(1460);
+                //     ip_pkt->ip_.ip_offset = htons((180 * i) | 0b0010000000000000);
+                //     memcpy(pkt + 34, data + 1440 * i, 1440);
+                //     int res = pcap_sendpacket(pcap, (u_char *)pkt, 1474);
+                //     if (res != 0)
+                //     {
+                //         printf("long!!\n");
+                //         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                //         return -1;
+                //     }
+                //     sendsize -= 1440;
+                //     i++;
+                // }
+                // sendsize = header->len - 400 * i;
 
-                sendsize = header->len - 400 * i;
+                // while (sendsize > 1474)
+                // {
+                //     ip_pkt->ip_.ip_len = htons(1460);
+                //     ip_pkt->ip_.ip_offset = htons((180 * i) | 0b0010000000000000);
+                //     memcpy(pkt + 34, data + 1440 * i, 1440);
+                //     int res = pcap_sendpacket(pcap, (u_char *)pkt, 1474);
+                //     if (res != 0)
+                //     {
+                //         printf("long!!\n");
+                //         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                //         return -1;
+                //     }
+                //     sendsize -= 1440;
+                //     i++;
+                // }
+                // sendsize = header->len - 400 * i;
                 printf("sendsize2 : %d\n", sendsize);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
