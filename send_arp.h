@@ -135,8 +135,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
             {
                 copy_mac(sender_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
-                // size_of_data = ntohs(ip_pkt->ip_.ip_len) - 20;
-                printf("ip first : %02x\n", ip_pkt->ip_.ip_first);
+                size_of_data = ntohs(ip_pkt->ip_.ip_len) - 20;
                 printf("size of data : %d\n", size_of_data);
 
                 int i = 0;
