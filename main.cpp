@@ -71,17 +71,17 @@ int main(int argc, char *argv[])
 	request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
 	// request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, htons(ArpHdr::Reply));
 	// request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, htons(ArpHdr::Reply));
-
-	ArpInfo *arp_info;
-	arp_info = (ArpInfo *)malloc(sizeof(ArpInfo));
-	arp_info->dev = dev;
-	arp_info->pcap = pcap;
-	arp_info->attacker_mac = attacker_mac;
-	arp_info->sender_mac = sender_mac;
-	arp_info->target_mac = target_mac;
-	arp_info->sender_ip = sender_ip;
-	arp_info->target_ip = target_ip;
 	relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
+
+	// ArpInfo *arp_info;
+	//  arp_info = (ArpInfo *)malloc(sizeof(ArpInfo));
+	//  arp_info->dev = dev;
+	//  arp_info->pcap = pcap;
+	//  arp_info->attacker_mac = attacker_mac;
+	//  arp_info->sender_mac = sender_mac;
+	//  arp_info->target_mac = target_mac;
+	//  arp_info->sender_ip = sender_ip;
+	//  arp_info->target_ip = target_ip;
 
 	// arp_thr_id = pthread_create(&arp_thread, NULL, arp_relay, (void *)arp_info);
 	// if (arp_thr_id < 0)
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	// }
 	// rly_thr_id = pthread_create(&rly_thread, NULL, rly, (void *)arp_info);
 
-	pthread_join(arp_thread, NULL);
+	// pthread_join(arp_thread, NULL);
 	pcap_close(pcap);
 	return 0;
 }
