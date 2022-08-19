@@ -186,12 +186,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 
                     for (int k = 0; k < 300; k++)
                     {
-                        printf("%c ", data[k]);
-                    }
-                    printf("\n\n\n\n");
-
-                    for (int k = 0; k < 300; k++)
-                    {
                         printf("%c ", data[k + 400 * i]);
                     }
                     printf("\n\n\n\n");
@@ -208,6 +202,11 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 
                 if (flag == 1)
                 {
+                    for (int k = 0; k < 300; k++)
+                    {
+                        printf("%c ", data[k + 400 * i]);
+                    }
+                    printf("\n\n\n\n");
                     sendsize = header->len - 400 * i;
                     ip_pkt->ip_.ip_len = htons(sendsize - 14);
                     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0000000000000000);
