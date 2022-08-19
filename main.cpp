@@ -86,8 +86,7 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 	// relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
-	while (1)
-		;
-	return 0;
+	pthread_join(arp_thread, NULL);
 	pcap_close(pcap);
+	return 0;
 }
