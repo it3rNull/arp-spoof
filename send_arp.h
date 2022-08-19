@@ -139,27 +139,22 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 printf("data len : %d\n", size_of_data);
 
                 memcpy(data, packet + 34, size_of_data);
-                int i = 0;
+
                 //단위 1440
                 // 1440 + 34 == 1475
-                ip_pkt->ip_.ip_len = htons(10);
+                // int i = 0;
                 // while (size_of_data > 1474)
                 // {
-                //     ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
+                //     ip_pkt->ip_.ip_len = htons(1460);
+                //     ip_pkt->ip_.ip_offset = htons((180 * i) | 0b0010000000000000);
                 // }
-                // ip_pkt->ip_.ip_len = htons(1480);
                 // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
                 //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
                 //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 copy_mac(sender_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
-
-                for (int i = 0; i < 20; i++)
-                {
-                    sendsize = 30;
-                    // int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                }
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                 if (res != 0)
                 {
                     printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
