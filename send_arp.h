@@ -85,8 +85,9 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
         TcpIpPacket *ip_pkt;
         pkt = (EthArpPacket *)packet;
         ip_pkt = (TcpIpPacket *)packet;
-        int left_length;
+        int size_of_data;
         int offset = 0;
+        u_char data[1500];
         if (res == 0)
             continue;
         if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
@@ -131,16 +132,19 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
         {
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
             {
-                left_length = ntohs(ip_pkt->ip_.ip_len) + 14;
-                printf("%d\n", ntohs(ip_pkt->ip_.ip_len));
-                printf("%d\n", left_length);
+                size_of_data = ntohs(ip_pkt->ip_.ip_len) - 20;
+                printf("ip len : %d\n", ntohs(ip_pkt->ip_.ip_len));
+                printf("data len : %d\n", size_of_data);
 
+                memcpy(data, packet + 34, size_of_data);
                 int i = 0;
-                while (left_length > 1500)
-                {
-                    // ip_pkt->ip_.ip_len = htons(1480);
-                    // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
-                }
+                //단위 1440
+                // 1440 + 34 == 1475
+                ip_pkt->ip_.ip_len = htons(10);
+                // while (size_of_data > 1474)
+                // {
+                //     ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
+                // }
                 // ip_pkt->ip_.ip_len = htons(1480);
                 // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
                 //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
