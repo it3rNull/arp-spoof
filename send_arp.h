@@ -194,7 +194,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 sendsize = header->len - 400 * i;
                 ip_pkt->ip_.ip_len = htons(sendsize - 14);
                 ip_pkt->ip_.ip_offset = 0;
-                ip_pkt->ip_.ip_offset = htons(0b0010000000000000);
+                ip_pkt->ip_.ip_offset = htons(50 | 0b0010000000000000);
                 printf("sendsize : %d\n", sendsize);
                 for (int i = 0; i < 20; i++)
                 {
