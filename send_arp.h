@@ -201,9 +201,9 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0000000000000000);
                     printf("pkt : %p\n", pkt);
                     printf("packet : %p\n", packet);
-                    for (int i = 0; i < 30; i++)
+                    for (int k = 0; k < 30; k++)
                     {
-                        printf("%c ", data[i]);
+                        printf("%c ", data[k]);
                     }
                     // printf("before %1x %1x %1x %1x %1x %1x %1x\n", *(pkt + 34), *(pkt + 35), *(pkt + 36), *(pkt + 37), *(pkt + 38), *(pkt + 39));
                     memcpy(pkt + 34, data + 400 * i, sendsize);
