@@ -298,5 +298,4 @@ void *arp_relay(void *arp_info)
             continue;
         }
     }
-    return 0;
 }
