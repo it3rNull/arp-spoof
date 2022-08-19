@@ -268,6 +268,7 @@ void *arp_relay(void *arp_info)
     u_int8_t *target_ip = f_arp_info->target_ip;
     u_int8_t *sender_ip = f_arp_info->sender_ip;
     const char *dev = f_arp_info->dev;
+    print_mac(sender_mac);
     while (true)
     {
         struct pcap_pkthdr *header;
