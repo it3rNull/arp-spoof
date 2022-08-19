@@ -182,7 +182,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 {
                     for (int k = 0; k < 300; k++)
                     {
-                        printf("%c ", data[k + 34]);
+                        printf("%c ", data[k]);
                     }
                     printf("\n\n\n\n");
 
