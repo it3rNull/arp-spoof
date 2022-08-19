@@ -140,7 +140,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 sendsize = header->len;
                 //단위 1440
                 // 1440 + 34 == 1474
-                while (size_of_data > 1474)
+                while (sendsize > 1474)
                 {
                     sendsize = 1474;
                     ip_pkt->ip_.ip_len = htons(1460);
@@ -152,7 +152,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
                         return -1;
                     }
-                    size_of_data -= 400;
+                    sendsize -= 400;
                     i++;
                 }
 
