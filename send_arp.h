@@ -284,7 +284,7 @@ void *arp_relay(void *arp_info)
             break;
         }
 
-        printf("%p\n", pkt);
+        printf("%p\n", pkt->arp_);
         printf("%p\n", packet);
         printf("\n\n");
         // printf("%x\n", htons(pkt->arp_.pro_));
