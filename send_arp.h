@@ -142,15 +142,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
                 }
                 ip_pkt->ip_.ip_len = htons(1480);
-                ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
-                // memcpy(pkt->eth_.dmac_, sender_mac, 6);
-                // memcpy(pkt->eth_.smac_, attacker_mac, 6);
+                // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
+                //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
+                //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 copy_mac(sender_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
-                for (int i = 0; i < 30; i++)
-                {
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                }
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
                     printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
