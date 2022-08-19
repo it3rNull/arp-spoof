@@ -298,5 +298,4 @@ void *arp_relay(void *arp_info)
             continue;
         }
     }
-    pthread_exit(NULL);
 }
