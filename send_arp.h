@@ -205,7 +205,13 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     {
                         printf("%c ", data[k]);
                     }
+                    printf("\n");
                     // printf("before %1x %1x %1x %1x %1x %1x %1x\n", *(pkt + 34), *(pkt + 35), *(pkt + 36), *(pkt + 37), *(pkt + 38), *(pkt + 39));
+                    for (int k = 0; k < 30; k++)
+                    {
+                        printf("%c ", data[k + 400 * i]);
+                    }
+                    printf("\n");
                     memcpy(pkt + 34, data + 400 * i, sendsize);
                     // printf("after %1x %1x %1x %1x %1x %1x %1x\n", *(pkt + 34), *(pkt + 35), *(pkt + 36), *(pkt + 37), *(pkt + 38), *(pkt + 39));
                     // printf("sendsize : %d\n", sendsize);
