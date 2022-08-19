@@ -135,6 +135,8 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
             {
                 copy_mac(sender_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
+                size_of_data = ntohs(ip_pkt->ip_.ip_len) - 20;
+                printf("size of data : %d\n", size_of_data);
 
                 int i = 0;
                 //단위 1440
@@ -157,6 +159,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //     i++;
                 // }
                 sendsize = header->len - 400 * i;
+                printf("sendsize : %d\n", sendsize);
                 // int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                 if (res != 0)
