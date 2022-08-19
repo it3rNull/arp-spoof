@@ -76,9 +76,9 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
 
 int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sender_mac, u_int8_t *target_mac, u_int8_t *sender_ip, u_int8_t *target_ip)
 {
+    printf("why.....\n");
     while (true)
     {
-        printf("why.....\n");
         struct pcap_pkthdr *header;
         const u_char *packet;
         int res = pcap_next_ex(pcap, &header, &packet);
