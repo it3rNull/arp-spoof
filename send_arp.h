@@ -284,7 +284,7 @@ void *arp_relay(void *arp_info)
         }
 
         pkt = (EthArpPacket *)packet;
-        printf("%p\n", pkt->arp_);
+        printf("%p\n", ((EthArpPacket *)pkt)->arp_);
         printf("%p\n", ((EthArpPacket *)packet)->arp_);
         printf("\n\n");
         // printf("%x\n", htons(pkt->arp_.pro_));
