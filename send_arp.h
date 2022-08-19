@@ -270,7 +270,6 @@ void *arp_relay(void *arp_info)
     const char *dev = f_arp_info->dev;
     while (true)
     {
-        printf("hi\n");
         struct pcap_pkthdr *header;
         const u_char *packet;
         EthArpPacket *pkt;
@@ -284,6 +283,7 @@ void *arp_relay(void *arp_info)
             break;
         }
 
+        printf("hi\n");
         if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, target_mac)) && (if_same_ip(pkt->arp_.tip, sender_ip)))
         {
             printf("where is sender?\n");
