@@ -203,14 +203,14 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     printf("packet : %p\n", packet);
                     for (int k = 0; k < 30; k++)
                     {
-                        printf("%c ", pkt[k + 34]);
+                        printf("%c ", packet[k + 34]);
                     }
                     printf("\n");
 
                     memcpy(pkt + 34, data + 400 * i, sendsize);
                     for (int k = 0; k < 30; k++)
                     {
-                        printf("%c ", pkt[k + 400 * i]);
+                        printf("%c ", packet[k + 400 * i]);
                     }
                     printf("\n");
                     int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
