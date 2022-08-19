@@ -186,7 +186,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 
                     for (int k = 0; k < 300; k++)
                     {
-                        printf("%c ", data[k + 400 * i]);
+                        printf("%c ", *((u_char *)pkt + 34 + k));
                     }
                     printf("\n\n\n\n");
                     memcpy(pkt + 34, data + 400 * i, 400);
