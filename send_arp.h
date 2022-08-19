@@ -141,7 +141,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     // ip_pkt->ip_.ip_len = htons(1480);
                     // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
                 }
-                / ip_pkt->ip_.ip_len = htons(1480);
+                // ip_pkt->ip_.ip_len = htons(1480);
                 // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
                 //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
                 //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
