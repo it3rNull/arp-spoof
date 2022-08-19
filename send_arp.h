@@ -184,6 +184,13 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     {
                         printf("%c ", data[k + 34]);
                     }
+                    printf("\n\n\n\n");
+
+                    for (int k = 0; k < 300; k++)
+                    {
+                        printf("%c ", packet[k + 34]);
+                    }
+                    printf("\n\n\n\n");
                     exit(0);
                     flag = 1;
                     ip_pkt->ip_.ip_len = htons(420);
