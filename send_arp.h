@@ -183,8 +183,8 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 ip_pkt->ip_.ip_offset = 0;
                 //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
                 //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
-                // int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                 if (res != 0)
                 {
                     fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
