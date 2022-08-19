@@ -199,20 +199,33 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     sendsize = header->len - 400 * i;
                     ip_pkt->ip_.ip_len = htons(sendsize - 14);
                     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0000000000000000);
-                    printf("pkt : %p\n", pkt);
-                    printf("packet : %p\n", packet);
+
+                    printf("before packet ver : ");
                     for (int k = 0; k < 30; k++)
                     {
                         printf("%c ", packet[k + 34]);
                     }
-                    printf("\n");
-
-                    memcpy(pkt + 34, data + 400 * i, sendsize);
+                    printf("\n\n");
+                    printf("before pkt ver : ");
                     for (int k = 0; k < 30; k++)
                     {
-                        printf("%c ", packet[k + 400 * i]);
+                        printf("%c ", packet[k + 34]);
                     }
-                    printf("\n");
+                    printf("\n\n");
+
+                    memcpy(pkt + 34, data + 400 * i, sendsize);
+                    printf("after packet ver : ");
+                    for (int k = 0; k < 30; k++)
+                    {
+                        printf("%c ", packet[k + 34]);
+                    }
+                    printf("\n\n");
+                    printf("after pkt ver : ");
+                    for (int k = 0; k < 30; k++)
+                    {
+                        printf("%c ", packet[k + 34]);
+                    }
+                    printf("\n\n");
                     int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                     // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                     if (res != 0)
