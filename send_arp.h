@@ -151,7 +151,11 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 copy_mac(sender_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+
+                for (int i = 0; i < 20; i++)
+                {
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                }
                 if (res != 0)
                 {
                     printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
