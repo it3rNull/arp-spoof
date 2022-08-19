@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 		perror("thread create error : ");
 		exit(0);
 	}
-	// relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
+	relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
 	pthread_join(arp_thread, NULL);
 	pcap_close(pcap);
 	return 0;
