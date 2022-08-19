@@ -79,7 +79,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
     while (true)
     {
         struct pcap_pkthdr *header;
-        u_char *packet;
+        const u_char *packet;
         int res = pcap_next_ex(pcap, &header, &packet);
         EthArpPacket *pkt;
         TcpIpPacket *ip_pkt;
