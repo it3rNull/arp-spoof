@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	printf("why.....\n");
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, 0);
 	reply(dev, pcap, target_mac, target_ip);
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, 0);
