@@ -188,7 +188,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
                         return -1;
                     }
-                    size_of_data -= 400;
+                    sendsize -= 400;
                     i++;
                 }
                 sendsize = header->len - 400 * i;
