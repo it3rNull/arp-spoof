@@ -89,9 +89,15 @@ int main(int argc, char *argv[])
 		perror("thread create error : ");
 		exit(0);
 	}
-	// arp_thr_id = pthread_create(&arp_thread, NULL, arp_relay, (void *)arp_info);
+	arp_thr_id = pthread_create(&arp_thread, NULL, arp_relay, (void *)arp_info);
+	if (arp_thr_id < 0)
+	{
+		perror("thread create error : ");
+		exit(0);
+	}
 
 	pthread_join(rly_thread, NULL);
+	pthread_join(arp_thread, NULL);
 	pcap_close(pcap);
 	return 0;
 }
