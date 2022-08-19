@@ -87,6 +87,8 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
         ip_pkt = (TcpIpPacket *)packet;
         int size_of_data;
         int offset = 0;
+
+        u_int sendsize;
         u_char data[1500];
         if (res == 0)
             continue;
@@ -154,8 +156,9 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 
                 for (int i = 0; i < 20; i++)
                 {
+                    sendsize = 30;
                     // int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, 10);
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                 }
                 if (res != 0)
                 {
