@@ -275,7 +275,6 @@ void *arp_relay(void *arp_info)
     while (true)
     {
         res = pcap_next_ex(pcap, &header, &packet);
-        pkt = (EthArpPacket *)packet;
         if (res == 0)
             continue;
         if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
@@ -284,7 +283,8 @@ void *arp_relay(void *arp_info)
             break;
         }
 
-        printf("%p\n", pkt);
+        pkt = (EthArpPacket *)packet;
+        printf("%p\n", pkt->arp_);
         printf("%p\n", ((EthArpPacket *)packet)->arp_);
         printf("\n\n");
         // printf("%x\n", htons(pkt->arp_.pro_));
