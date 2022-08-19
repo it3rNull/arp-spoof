@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
 	u_int8_t target_ip[4];
 
 	pthread_t arp_thread; // catching arp
+	pthread_t rly_thread;
 	int arp_thr_id;
+	int rly_thr_id;
 	char *dev = argv[1];
 	char *result;
 	argv_ip(argv[2], sender_ip);
@@ -79,13 +81,16 @@ int main(int argc, char *argv[])
 	arp_info->target_mac = target_mac;
 	arp_info->sender_ip = sender_ip;
 	arp_info->target_ip = target_ip;
-	arp_thr_id = pthread_create(&arp_thread, NULL, arp_relay, (void *)arp_info);
-	if (arp_thr_id < 0)
-	{
-		perror("thread create error : ");
-		exit(0);
-	}
 	relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
+
+	// arp_thr_id = pthread_create(&arp_thread, NULL, arp_relay, (void *)arp_info);
+	// if (arp_thr_id < 0)
+	// {
+	// 	perror("thread create error : ");
+	// 	exit(0);
+	// }
+	// rly_thr_id = pthread_create(&rly_thread, NULL, rly, (void *)arp_info);
+
 	pthread_join(arp_thread, NULL);
 	pcap_close(pcap);
 	return 0;
