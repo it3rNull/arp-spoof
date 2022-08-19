@@ -286,6 +286,7 @@ void *arp_relay(void *arp_info)
 
         printf("%p\n", pkt);
         printf("%p\n", packet);
+        printf("\n\n");
         // printf("%x\n", htons(pkt->arp_.pro_));
         // if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, target_mac)) && (if_same_ip(pkt->arp_.tip, sender_ip)))
         // {
