@@ -78,6 +78,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 {
     while (true)
     {
+        printf("why.....\n");
         struct pcap_pkthdr *header;
         const u_char *packet;
         int res = pcap_next_ex(pcap, &header, &packet);
@@ -129,7 +130,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 }
             }
         }
-        printf("why.....\n");
         else if (if_same_mac(pkt->eth_.smac_, target_mac))
         {
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
