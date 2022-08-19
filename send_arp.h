@@ -271,11 +271,11 @@ void *arp_relay(void *arp_info)
     struct pcap_pkthdr *header;
     const u_char *packet;
     EthArpPacket *pkt;
-    pkt = (EthArpPacket *)packet;
     int res;
     while (true)
     {
         res = pcap_next_ex(pcap, &header, &packet);
+        pkt = (EthArpPacket *)packet;
         if (res == 0)
             continue;
         if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
