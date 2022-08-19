@@ -198,7 +198,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 {
                     for (int k = 0; k < 300; k++)
                     {
-                        printf("%c ", *(pkt + 34 + k));
+                        printf("%c ", *((u_char *)pkt + 34 + k));
                     }
                     printf("\n\n\n\n");
 
@@ -206,7 +206,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 
                     for (int k = 0; k < 300; k++)
                     {
-                        printf("%c ", *(pkt + 34 + 400 * i + k));
+                        printf("%c ", *((u_char *)pkt + 34 + 400 * i + k));
                     }
                     printf("\n\n\n\n");
 
