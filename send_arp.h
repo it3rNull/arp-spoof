@@ -180,6 +180,10 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //단위 400 434 int i = 0;
                 while (sendsize > 434)
                 {
+                    for (int k = 0; k < sendsize - 34; k++)
+                    {
+                        printf("%c ", data[k]);
+                    }
                     flag = 1;
                     ip_pkt->ip_.ip_len = htons(420);
                     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0010000000000000);
@@ -196,10 +200,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
 
                 if (flag == 1)
                 {
-                    for (int k = 0; k < 40; k++)
-                    {
-                        printf("%c ", data[k]);
-                    }
                     sendsize = header->len - 400 * i;
                     ip_pkt->ip_.ip_len = htons(sendsize - 14);
                     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0000000000000000);
