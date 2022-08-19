@@ -6,12 +6,21 @@
 #include <cstring>
 #include "ethhdr.h"
 #include "arphdr.h"
+#include "iphdr.h"
 
 #pragma pack(push, 1)
 struct EthArpPacket final
 {
     EthHdr eth_;
     ArpHdr arp_;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct TcpIpPacket final
+{
+    EthHdr eth_;
+    IpHdr ip_;
 };
 #pragma pack(pop)
 

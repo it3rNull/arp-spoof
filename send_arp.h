@@ -82,7 +82,11 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
         const u_char *packet;
         int res = pcap_next_ex(pcap, &header, &packet);
         EthArpPacket *pkt;
+        TcpIpPacket *ip_pkt;
         pkt = (EthArpPacket *)packet;
+        ip_pkt = (TcpIpPacket *)packet;
+        int left_length;
+        int offset = 0;
         if (res == 0)
             continue;
         if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
@@ -109,18 +113,13 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
         {
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
             {
+                printf("%d\n", ip_pkt->ip_.ip_len);
                 // memcpy(pkt->eth_.dmac_, target_mac, 6);
                 // memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 copy_mac(target_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
-                printf("relay sender packet\n");
 
-                for (int i = 0; i < 10; i++)
-                {
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                }
-
-                continue;
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
                     printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
@@ -132,14 +131,26 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
         {
             if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
             {
+                left_length = ntohs(ip_pkt->ip_.ip_len) + 14;
+                printf("%d\n", ntohs(ip_pkt->ip_.ip_len));
+                printf("%d\n", left_length);
+
+                int i = 0;
+                while (left_length > 1500)
+                {
+                    // ip_pkt->ip_.ip_len = htons(1480);
+                    // ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
+                }
+                ip_pkt->ip_.ip_len = htons(1480);
+                ip_pkt->ip_.ip_offset = htons((185 * i) | 0b0010000000000000);
                 // memcpy(pkt->eth_.dmac_, sender_mac, 6);
                 // memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 copy_mac(sender_mac, pkt->eth_.dmac_);
                 copy_mac(attacker_mac, pkt->eth_.smac_);
-                printf("relay target packet\n");
-
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                continue;
+                for (int i = 0; i < 30; i++)
+                {
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                }
                 if (res != 0)
                 {
                     printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
