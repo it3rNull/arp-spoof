@@ -209,7 +209,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     printf("before pkt ver : ");
                     for (int k = 0; k < 30; k++)
                     {
-                        printf("%c ", ((u_char *)pkt + 34));
+                        printf("%c ", *((u_char *)pkt + 34 + k));
                     }
                     printf("\n\n");
 
@@ -223,7 +223,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     printf("after pkt ver : ");
                     for (int k = 0; k < 30; k++)
                     {
-                        printf("%c ", ((u_char *)pkt + 34));
+                        printf("%c ", *((u_char *)pkt + 34 + k));
                     }
                     printf("\n\n");
                     int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
