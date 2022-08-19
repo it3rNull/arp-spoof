@@ -268,9 +268,6 @@ void *arp_relay(void *arp_info)
     u_int8_t *target_ip = f_arp_info->target_ip;
     u_int8_t *sender_ip = f_arp_info->sender_ip;
     const char *dev = f_arp_info->dev;
-    for (int i = 0; i < 10; i++)
-    {
-    }
     while (true)
     {
         printf("hi\n");
