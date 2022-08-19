@@ -157,8 +157,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //     i++;
                 // }
                 sendsize = header->len - 400 * i;
-                printf("hlen : %d\n", header->len);
-                printf("sendsize : %d\n", sendsize);
                 // int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                 if (res != 0)
