@@ -285,7 +285,7 @@ void *arp_relay(void *arp_info)
         }
 
         print_mac(((EthArpPacket *)packet)->arp_.smac_);
-        print_mac(target_mac);
+        print_ip(((EthArpPacket *)packet)->arp_.tip);
         if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, target_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, sender_ip)))
         {
             printf("where is sender?\n");
