@@ -137,6 +137,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 copy_mac(attacker_mac, pkt->eth_.smac_);
 
                 int i = 0;
+                int flag = 0;
                 sendsize = header->len;
                 memcpy(data, packet + 34, sendsize - 34);
                 //단위 1440
@@ -177,27 +178,41 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 // size_of_data = ntohs(ip_pkt->ip_.ip_len) - 20;
 
                 //단위 400 434 int i = 0;
-                // while (sendsize > 434)
-                // {
-                //     ip_pkt->ip_.ip_len = htons(420);
-                //     ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0010000000000000);
-                //     memcpy(pkt + 34, data + 400 * i, 400);
-                //     int res = pcap_sendpacket(pcap, (u_char *)pkt, 434);
-                //     if (res != 0)
-                //     {
-                //         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                //         return -1;
-                //     }
-                //     sendsize -= 400;
-                //     i++;
-                // }
-                sendsize = header->len - 400 * i;
-                ip_pkt->ip_.ip_len = htons(sendsize - 14);
-                // ip_pkt->ip_.ip_offset = htons(0b0000000000000000);
-                //  memcpy(pkt + 34, data + 400 * i, sendsize);
+                while (sendsize > 434)
+                {
+                    flag = 1;
+                    ip_pkt->ip_.ip_len = htons(420);
+                    ip_pkt->ip_.ip_offset = htons((50 * i) | 0b0010000000000000);
+                    memcpy(pkt + 34, data + 400 * i, 400);
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, 434);
+                    if (res != 0)
+                    {
+                        fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                        return -1;
+                    }
+                    sendsize -= 400;
+                    i++;
+                }
+
+                if (flag == 1)
+                {
+                    sendsize = header->len - 400 * i;
+                    ip_pkt->ip_.ip_len = htons(sendsize - 14);
+                    ip_pkt->ip_.ip_offset = 0;
+                    //  memcpy(pkt + 34, data + 400 * i, sendsize);
+                    printf("sendsize : %d\n", sendsize);
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
+                    // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
+                    if (res != 0)
+                    {
+                        fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                        return -1;
+                    }
+                    continue;
+                }
+
                 printf("sendsize : %d\n", sendsize);
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
+                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
                     fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
