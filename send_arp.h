@@ -195,6 +195,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     ip_pkt->ip_.ip_len = htons(1420);
                     ip_pkt->ip_.ip_offset = htons((175 * i) | 0b0010000000000000);
 
+                    printf("sendsize : %d\n", sendsize);
                     int res = pcap_sendpacket(pcap, (u_char *)pkt, 1400 + 34);
                     if (res != 0)
                     {
@@ -217,6 +218,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     ip_pkt->ip_.ip_offset = htons((175 * i) | 0b0000000000000000);
 
                     memcpy(pkt + 34, data + 1400 * i, sendsize);
+                    printf("sendsize : %d\n", sendsize);
                     int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                     // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                     if (res != 0)
@@ -227,7 +229,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     continue;
                 }
 
-                // printf("sendsize : %d\n", sendsize);
+                printf("sendsize : %d\n", sendsize);
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
