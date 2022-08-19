@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	printf("why.....\n");
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, 0);
 	reply(dev, pcap, target_mac, target_ip);
 	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, 0);
@@ -50,6 +49,7 @@ int main(int argc, char *argv[])
 	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, htons(ArpHdr::Request));
 	// reply(dev, pcap, sender_mac, sender_ip);
 
+	printf("why.....\n");
 	printf("attacker ip addr : ");
 	print_ip(attacker_ip);
 	printf("sender ip addr : ");
