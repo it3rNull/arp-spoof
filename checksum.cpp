@@ -11,5 +11,7 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
         sum += block[i];
     }
 
-    printf("sum : %d\n");
+    printf("sum : %x\n");
+
+    printf("carry : %x\n", *carry);
 }
