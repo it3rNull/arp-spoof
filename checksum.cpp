@@ -23,4 +23,6 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
     sum %= 0x10000;
     sum += temp;
     ret = ~sum;
+
+    return ret;
 }
