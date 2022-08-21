@@ -200,7 +200,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 //     continue;
                 // }
 
-                ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
+                // ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
