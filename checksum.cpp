@@ -12,8 +12,9 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
         {
             continue;
         }
-        printf("%x", htons(block[i]));
         sum += block[i];
+        printf("%x ", htons(block[i]));
+        printf("%x\n", sum);
     }
 
     temp = sum >> 16;
