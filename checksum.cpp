@@ -20,5 +20,8 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
     temp = sum >> 16;
     sum %= 0x10000;
     sum += temp;
-    printf("sum : %x\n", sum);
+    temp = sum >> 16;
+    sum %= 0x10000;
+    sum += temp;
+    printf("checksum : %x\n", ~sum);
 }
