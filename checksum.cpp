@@ -6,11 +6,11 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
     uint16_t *block = (uint16_t *)ip_;
     uint32_t carry;
     uint32_t temp;
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 10; i++)
     {
         if (i == 5)
         {
-            break;
+            continue;
         }
         printf("%x", htons(block[i]));
         sum += block[i];
