@@ -202,7 +202,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                 ip_pkt->ip_.ip_check = calc_checksum_ip(&(ip_pkt->ip_));
                 for (int i = 0; i < 10; i++)
                 {
-
                     int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 }
                 if (res != 0)
