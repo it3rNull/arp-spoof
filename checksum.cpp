@@ -14,6 +14,7 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
             continue;
         }
         sum += htons(block[i]);
+        printf("%x\n", sum);
     }
 
     temp = sum >> 16;
@@ -22,6 +23,7 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
     temp = sum >> 16;
     sum %= 0x10000;
     sum += temp;
+
     ret = ~sum;
 
     return ret;
