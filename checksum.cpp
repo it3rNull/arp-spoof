@@ -12,10 +12,10 @@ uint16_t calc_checksum_ip(IpHdr *ip_)
         {
             break;
         }
-        printf("%x ", htons(block[i]));
+        printf("%x", htons(block[i]));
         sum += block[i];
 
-        printf("!i ");
+        printf("!%d ", i);
     }
 
     printf("sum : %x\n", sum);
