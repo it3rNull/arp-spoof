@@ -12,6 +12,7 @@ struct ArpInfo
     u_int8_t *target_ip;
 };
 
+uint16_t calc_checksum_ip(IpHdr *ip_);
 int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_mac, u_int8_t *sender_mac, u_int8_t *sender_ip, u_int8_t *target_mac, u_int8_t *target_ip, int type)
 {
     EthArpPacket packet;
