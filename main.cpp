@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
 		scanf("%d", &todo_choice);
 		if (todo_choice == 1)
 		{
+			sleep(10);
 			for (int i = 0; i < count; i++)
 			{
 				request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, htons(ArpHdr::Request));
