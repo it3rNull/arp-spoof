@@ -18,10 +18,10 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
 {
     EthArpPacket packet;
 
-    // memcpy(packet.eth_.dmac_, dest_mac, 6);
-    // memcpy(packet.eth_.smac_, source_mac, 6);
-    copy_mac(dest_mac, packet.eth_.dmac_);
-    copy_mac(source_mac, packet.eth_.smac_);
+    memcpy(packet.eth_.dmac_, dest_mac, 6);
+    memcpy(packet.eth_.smac_, source_mac, 6);
+    // copy_mac(dest_mac, packet.eth_.dmac_);
+    // copy_mac(source_mac, packet.eth_.smac_);
     packet.eth_.type_ = htons(EthHdr::Arp);
     packet.arp_.hrd_ = htons(ArpHdr::ETHER);
     packet.arp_.pro_ = htons(EthHdr::Ip4);
@@ -88,10 +88,9 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
     return 0;
 }
 
-// int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sender_mac, u_int8_t *target_mac, u_int8_t *sender_ip, u_int8_t *target_ip)
 int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, int count)
 {
-    const int fragment_size = 1400;
+    const int fragment_size = 1440;
     while (true)
     {
         struct pcap_pkthdr *header;
@@ -143,13 +142,9 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                     int i = 0;
                     int flag = 0;
                     sendsize = header->len;
-                    // memcpy(data, packet + 34, sendsize - 34);
-                    //단위 400 434 int i = 0;
                     while (sendsize > fragment_size + 34)
                     {
                         flag = 1;
-                        printf("before");
-                        print_mac(attacker_mac);
                         for (int j = 0; j < fragment_size; j++)
                         {
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
@@ -176,15 +171,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
 
-                        // memcpy(pkt + 34, data + (400 * i), 400);
                         sendsize = header->len - fragment_size * i;
                         ip_pkt->ip_.ip_len = htons(sendsize - 14);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0000000000000000);
-                        // memcpy(pkt + 34, data + fragment_size * i, sendsize);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
                         printf("sendsize : %d\n", sendsize);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                        // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                         if (res != 0)
                         {
                             fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
@@ -244,15 +236,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
 
-                        // memcpy(pkt + 34, data + (400 * i), 400);
                         sendsize = header->len - fragment_size * i;
                         ip_pkt->ip_.ip_len = htons(sendsize - 14);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0000000000000000);
-                        // memcpy(pkt + 34, data + fragment_size * i, sendsize);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
                         printf("sendsize : %d\n", sendsize);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                        // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                         if (res != 0)
                         {
                             fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
