@@ -116,7 +116,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
 
         for (int i = 0; i < count; i++)
         {
-            print_mac(attacker_mac);
             if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, targets[i].target_mac)) && (if_same_ip(pkt->arp_.tip, targets[i].sender_ip)))
             {
                 printf("where is sender?\n");
@@ -164,10 +163,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                     while (sendsize > fragment_size + 34)
                     {
                         flag = 1;
+                        print_mac(attacker_mac);
                         for (int j = 0; j < fragment_size; j++)
                         {
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
+                        print_mac(attacker_mac);
                         ip_pkt->ip_.ip_len = htons(fragment_size + 20);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0010000000000000);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
@@ -183,12 +184,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
 
                     if (flag == 1)
                     {
-                        print_mac(attacker_mac);
+
                         for (int j = 0; j < sendsize - 34; j++)
                         {
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
-                        print_mac(attacker_mac);
+
                         // memcpy(pkt + 34, data + (400 * i), 400);
                         sendsize = header->len - fragment_size * i;
                         ip_pkt->ip_.ip_len = htons(sendsize - 14);
