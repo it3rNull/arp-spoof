@@ -5,7 +5,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-int kbhit(void)
+int kb_hit(void)
 {
     struct termios oldt, newt;
     int ch;
