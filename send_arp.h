@@ -135,8 +135,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                 {
                     memcpy(pkt->eth_.dmac_, targets[i].target_mac, 6);
                     memcpy(pkt->eth_.smac_, attacker_mac, 6);
-                    // copy_mac(targets[i].target_mac, pkt->eth_.dmac_);
-                    // copy_mac(attacker_mac, pkt->eth_.smac_);
 
                     int i = 0;
                     int flag = 0;
@@ -148,7 +146,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                         {
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
-                        print_mac(attacker_mac);
                         ip_pkt->ip_.ip_len = htons(fragment_size + 20);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0010000000000000);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
@@ -174,7 +171,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                         ip_pkt->ip_.ip_len = htons(sendsize - 14);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0000000000000000);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
-                        printf("sendsize : %d\n", sendsize);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                         if (res != 0)
                         {
@@ -192,12 +188,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                     }
                 }
             }
-            else if (if_same_mac(pkt->eth_.smac_, targets[i].target_mac))
+            else if (!memcmp(pkt->eth_.smac_, targets[i].target_mac, 6))
             {
-                if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+                if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
                 {
-                    copy_mac(targets[i].sender_mac, pkt->eth_.dmac_);
-                    copy_mac(attacker_mac, pkt->eth_.smac_);
+                    memcpy(targets[i].sender_mac, pkt->eth_.dmac_, 6);
+                    memcpy(attacker_mac, pkt->eth_.smac_, 6);
 
                     int i = 0;
                     int flag = 0;
