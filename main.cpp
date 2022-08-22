@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
 	{
 		printf("1. Start Attack!\n");
 		printf("2. Add flow info\n");
-		printf("3. Exit\n");
+		printf("3. View flow info\n");
+		printf("4. Exit\n");
 		scanf("%d", &todo_choice);
 		if (todo_choice == 1)
 		{
@@ -81,7 +82,6 @@ int main(int argc, char *argv[])
 		}
 		else if (todo_choice == 4)
 		{
-			pcap_close(pcap);
 			exit(0);
 		}
 	}
