@@ -41,3 +41,4 @@ void copy_mac(u_int8_t *src, u_int8_t *dst);
 void print_mac(u_int8_t *mac);
 bool if_same_mac(u_int8_t *mac1, u_int8_t *mac2);
 bool if_same_ip(u_int8_t *mac1, u_int8_t *mac2);
+void print_logo();

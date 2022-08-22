@@ -17,6 +17,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
+	print_logo();
 	signal(SIGINT, sigint_handler);
 	if (argc < 4 || argc % 2 == 1)
 	{
