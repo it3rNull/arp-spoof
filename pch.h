@@ -24,6 +24,16 @@ struct TcpIpPacket final
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct list final
+{
+    u_int8_t sender_ip[4];
+    u_int8_t target_ip[4];
+    u_int8_t sender_mac[6];
+    u_int8_t target_mac[6];
+};
+#pragma pack(pop)
+
 void argv_ip(char *argv, u_int8_t *dst);
 void copy_ip(u_int8_t *src, u_int8_t *dst);
 void print_ip(u_int8_t *ip);

