@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
 		scanf("%d", &todo_choice);
 		if (todo_choice == 1)
 		{
-			sleep(10);
 			for (int i = 0; i < count; i++)
 			{
 				request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, htons(ArpHdr::Request));
@@ -72,6 +71,7 @@ int main(int argc, char *argv[])
 				request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
 			}
 			printf("press any key to stop .. \n");
+			sleep(1);
 			relay(dev, pcap, attacker_mac, targets, count);
 		}
 		else if (todo_choice == 2)
