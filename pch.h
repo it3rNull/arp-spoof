@@ -4,6 +4,7 @@
 #include <string.h>
 #include <cstdlib>
 #include <cstring>
+#include <stdio.h>
 #include "ethhdr.h"
 #include "arphdr.h"
 #include "iphdr.h"

@@ -7,7 +7,23 @@
 
 void sigint_handler(int signo)
 {
-	printf("Ctrl-C\n");
+	int choice;
+	printf("You want to quit?\n");
+	while (1)
+	{
+		printf("1. Quit\n");
+		printf("2. Keep Attack\n");
+		scanf_s("%d", &choice);
+
+		if (choice == 1)
+		{
+			exit(0);
+		}
+		else if (choice == 2)
+		{
+			return;
+		}
+	}
 }
 void usage()
 {
@@ -61,15 +77,15 @@ int main(int argc, char *argv[])
 		printf("flow %d info\n", i);
 		printf("attacker ip addr : ");
 		print_ip(attacker_ip);
-		printf("sender%d ip addr : ", i);
+		printf("sender_%d ip addr : ", i);
 		print_ip(targets[i].sender_ip);
-		printf("target%d ip addr : ", i);
+		printf("target_%d ip addr : ", i);
 		print_ip(targets[i].target_ip);
 		printf("attacker mac addr : ");
 		print_mac(attacker_mac);
-		printf("sender%d mac addr : ", i);
+		printf("sender_%d mac addr : ", i);
 		print_mac(targets[i].sender_mac);
-		printf("target%d mac addr : ", i);
+		printf("target_%d mac addr : ", i);
 		print_mac(targets[i].target_mac);
 		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
 		request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
