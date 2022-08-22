@@ -91,7 +91,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
             break;
         }
 
-        for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; i++)
         {
             if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, targets[i].target_mac, 6)) && (!memcmp(pkt->arp_.tip, targets[i].sender_ip, 4)))
             {

@@ -20,7 +20,6 @@ void copy_ip(u_int8_t *src, u_int8_t *dst)
 }
 void print_ip(u_int8_t *ip)
 {
-    printf("ip addr :");
     for (int i = 0; i < 4; i++)
     {
         printf("%d", ip[i]);
@@ -40,7 +39,6 @@ void copy_mac(u_int8_t *src, u_int8_t *dst)
 }
 void print_mac(u_int8_t *mac)
 {
-    printf("mac addr ");
     for (int i = 0; i < 6; i++)
     {
         printf("%02x", mac[i]);
@@ -99,4 +97,30 @@ void print_logo()
     printf("|syntax : arp-spoof <interface> <sender ip 1> <target ip 1> [<sender ip 2> <target ip 2>...]\n");
     printf("|sample : arp-spoof wlan0 192.168.10.2 192.168.10.1 192.168.10.1 192.168.10.2n\n");
     printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+}
+
+void sigint_handler(int signo)
+{
+    int choice;
+    printf("You want to quit?\n");
+    while (1)
+    {
+        printf("1. Quit\n");
+        printf("2. Keep Attack\n");
+        scanf("%d", &choice);
+
+        if (choice == 1)
+        {
+            exit(0);
+        }
+        else if (choice == 2)
+        {
+            return;
+        }
+    }
+}
+
+void pcap_close(pcap_t *pcap)
+{
+    pcap_close(pcap);
 }
