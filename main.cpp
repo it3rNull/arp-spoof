@@ -3,6 +3,12 @@
 #include "mac.h"
 #include "ip.h"
 #include "pthread.h"
+#include <signal.h>
+
+void sigint_handler(int signo)
+{
+	printf("Ctrl-C\n");
+}
 void usage()
 {
 	printf("syntax : arp-spoof <interface> <sender ip 1> <target ip 1> [<sender ip 2> <target ip 2>...]\n");
@@ -11,6 +17,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sigint_handler);
 	if (argc < 4 || argc % 2 == 1)
 	{
 		usage();
