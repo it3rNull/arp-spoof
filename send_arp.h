@@ -93,7 +93,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
 
         for (int i = 0; i < count; i++)
         {
-            if (_kbhit())
+            if (kbhit())
             {
                 request(dev, pcap, targets[i].target_mac, attacker_mac, targets[i].sender_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
                 request(dev, pcap, targets[i].sender_mac, attacker_mac, targets[i].target_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
