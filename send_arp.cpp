@@ -79,7 +79,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
         if (_kbhit())
         {
             c = _getch();
-            if (c == "c")
+            if (c == 'c')
             {
                 for (int i = 0; i < count; i++)
                 {
