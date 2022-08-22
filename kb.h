@@ -12,4 +12,6 @@ void init_keyboard();
 
 void close_keyboard();
 
-int kbhit();
+int _kbhit();
+
+int _getch();

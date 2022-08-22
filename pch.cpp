@@ -102,7 +102,7 @@ void print_logo()
 void sigint_handler(int signo)
 {
     int choice;
-    printf("You want to quit?\n");
+    printf("You want to quit? this way doesn't guarantee ARP table recovering\n");
     while (1)
     {
         printf("1. Quit\n");
