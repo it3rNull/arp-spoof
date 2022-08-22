@@ -49,15 +49,7 @@ int main(int argc, char *argv[])
 	{
 		argv_ip(argv[2 * i + 2], targets[i].sender_ip);
 		argv_ip(argv[2 * i + 3], targets[i].target_ip);
-		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
-		printf("flow %d info\n", i);
-		printf("sender_%d ip addr : ", i);
-		print_ip(targets[i].sender_ip);
-		printf("target_%d ip addr : ", i);
-		print_ip(targets[i].target_ip);
-		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
 	}
-
 	int todo_choice;
 	printf("What do to?\n");
 	while (1)
@@ -84,6 +76,10 @@ int main(int argc, char *argv[])
 			add_flow(targets, &count);
 		}
 		else if (todo_choice == 3)
+		{
+			view_flow(targets, count);
+		}
+		else if (todo_choice == 4)
 		{
 			pcap_close(pcap);
 			exit(0);
@@ -116,4 +112,18 @@ void add_flow(list *targets, int *count)
 	}
 
 	(*count)++;
+}
+
+void view_flow(list *targets, int count)
+{
+	for (int i = 0; i < count; i += 1)
+	{
+		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
+		printf("flow %d info\n", i);
+		printf("sender_%d ip addr : ", i);
+		print_ip(targets[i].sender_ip);
+		printf("target_%d ip addr : ", i);
+		print_ip(targets[i].target_ip);
+		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
+	}
 }
