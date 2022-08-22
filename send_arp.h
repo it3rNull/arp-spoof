@@ -27,19 +27,6 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
     packet.arp_.pln_ = 4;
 
     packet.arp_.op_ = type;
-    // if (type == 0)
-    // {
-    //     packet.arp_.op_ = htons(ArpHdr::Request);
-    // }
-    // else if (type == 1)
-    // {
-    //     packet.arp_.op_ = htons(ArpHdr::Reply);
-    //}
-    // else
-    // {
-    //     printf("case 0 is sending request, case 1 is sending reply\n");
-    //     return -1;
-    // }
 
     memcpy(packet.arp_.smac_, sender_mac, 6);
     memcpy(packet.arp_.sip, sender_ip, 4);
