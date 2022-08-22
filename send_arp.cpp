@@ -187,7 +187,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                         ip_pkt->ip_.ip_len = htons(fragment_size + 20);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0010000000000000);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
-                        printf("fragment%d ... sendsize : %d\n", i, sendsize);
+                        // printf("fragment%d ... sendsize : %d\n", i, sendsize);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, fragment_size + 34);
                         if (res != 0)
                         {
@@ -210,7 +210,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                         ip_pkt->ip_.ip_len = htons(sendsize - 14);
                         ip_pkt->ip_.ip_offset = htons((fragment_size / 8 * i) | 0b0000000000000000);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
-                        printf("last fragment sendsize : %d\n\n", sendsize);
+                        // printf("last fragment sendsize : %d\n\n", sendsize);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                         if (res != 0)
                         {
