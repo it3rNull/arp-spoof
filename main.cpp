@@ -13,7 +13,7 @@ void sigint_handler(int signo)
 	{
 		printf("1. Quit\n");
 		printf("2. Keep Attack\n");
-		scanf_s("%d", &choice);
+		scanf("%d", &choice);
 
 		if (choice == 1)
 		{
