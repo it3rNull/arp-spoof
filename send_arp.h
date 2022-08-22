@@ -192,8 +192,10 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
             {
                 if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
                 {
-                    copy_mac(targets[i].sender_mac, pkt->eth_.dmac_);
-                    copy_mac(attacker_mac, pkt->eth_.smac_);
+                    // copy_mac(targets[i].sender_mac, pkt->eth_.dmac_);
+                    // copy_mac(attacker_mac, pkt->eth_.smac_);
+                    memcpy(pkt->eth_.dmac_, targets[i].sender_mac);
+                    memcpy(pkt->eth_.smac_, attacker_mac);
 
                     int i = 0;
                     int flag = 0;
