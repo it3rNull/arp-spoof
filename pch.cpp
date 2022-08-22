@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "kb.h"
 
 void argv_ip(char *argv, u_int8_t *dst)
 {
