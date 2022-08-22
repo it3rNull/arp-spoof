@@ -8,7 +8,6 @@
 #include "ethhdr.h"
 #include "arphdr.h"
 #include "iphdr.h"
-#include "kb.h"
 
 #pragma pack(push, 1)
 struct EthArpPacket final
