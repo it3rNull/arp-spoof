@@ -195,6 +195,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                         // memcpy(pkt + 34, data + fragment_size * i, sendsize);
                         ip_pkt->ip_.ip_check = htons(calc_checksum_ip(&(ip_pkt->ip_)));
                         printf("sendsize : %d\n", sendsize);
+                        print_mac(attacker_mac);
                         int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                         // int res = pcap_sendpacket(pcap, (u_char *)pkt, sendsize);
                         if (res != 0)
