@@ -149,6 +149,10 @@ void add_flow(list *targets, int *count)
 
 void view_flow(list *targets, int count)
 {
+    if (count == 0)
+    {
+        printf("no flow yet ! please Add flow to start attack\n\n");
+    }
     for (int i = 0; i < count; i += 1)
     {
         printf("\n+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
