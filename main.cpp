@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	{
 		printf("1. Start Attack!\n");
 		printf("2. Add flow info\n");
-		printf("3. Exit");
+		printf("3. Exit\n");
 		scanf("%d", &todo_choice);
 		if (todo_choice == 1)
 		{
@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 
 void add_flow(list *targets, int *count)
 {
+	targets = (list *)realloc(targets, sizeof(list) * (*count) + 1);
 	char ip[30];
 	char mac[30];
 	printf("Enter sender ip address: ");
@@ -103,6 +104,16 @@ void add_flow(list *targets, int *count)
 	printf("Enter target ip address: ");
 	scanf("%s", ip);
 	argv_ip(ip, targets[*count].target_ip);
+	for (int i = 0; i < *count; i += 1)
+	{
+		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
+		printf("flow %d info\n", i);
+		printf("sender_%d ip addr : ", i);
+		print_ip(targets[i].sender_ip);
+		printf("target_%d ip addr : ", i);
+		print_ip(targets[i].target_ip);
+		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
+	}
 
 	(*count)++;
 }
