@@ -188,6 +188,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                         {
                             *((u_char *)pkt + 34 + j) = *(packet + 34 + fragment_size * i + j);
                         }
+                        print_mac(attacker_mac);
                         // memcpy(pkt + 34, data + (400 * i), 400);
                         sendsize = header->len - fragment_size * i;
                         ip_pkt->ip_.ip_len = htons(sendsize - 14);
