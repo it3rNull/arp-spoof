@@ -188,9 +188,9 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                     }
                 }
             }
-            else if (if_same_mac(pkt->eth_.smac_, targets[i].target_mac))
+            else if (!memcmp(pkt->eth_.smac_, targets[i].target_mac, 6))
             {
-                if (if_same_mac(pkt->eth_.dmac_, attacker_mac))
+                if (!memcmp(pkt->eth_.dmac_, attacker_mac, 6))
                 {
                     copy_mac(targets[i].sender_mac, pkt->eth_.dmac_);
                     copy_mac(attacker_mac, pkt->eth_.smac_);
