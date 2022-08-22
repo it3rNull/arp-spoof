@@ -43,15 +43,15 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
         return -1;
     }
 
-    // memcpy(packet.arp_.smac_, sender_mac, 6);
-    // memcpy(packet.arp_.sip, sender_ip, 4);
-    copy_mac(sender_mac, packet.arp_.smac_);
-    copy_ip(sender_ip, packet.arp_.sip);
+    memcpy(packet.arp_.smac_, sender_mac, 6);
+    memcpy(packet.arp_.sip, sender_ip, 4);
+    // copy_mac(sender_mac, packet.arp_.smac_);
+    // copy_ip(sender_ip, packet.arp_.sip);
 
-    // memcpy(packet.arp_.tmac_, target_mac, 6);
-    // memcpy(packet.arp_.tip, target_ip, 4);
-    copy_mac(target_mac, packet.arp_.tmac_);
-    copy_ip(target_ip, packet.arp_.tip);
+    memcpy(packet.arp_.tmac_, target_mac, 6);
+    memcpy(packet.arp_.tip, target_ip, 4);
+    // copy_mac(target_mac, packet.arp_.tmac_);
+    // copy_ip(target_ip, packet.arp_.tip);
 
     int res = pcap_sendpacket(pcap, reinterpret_cast<const u_char *>(&packet), sizeof(EthArpPacket));
     if (res != 0)
