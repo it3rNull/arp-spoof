@@ -2,28 +2,6 @@
 #include "pch.h"
 #include "checksum.h"
 
-#ifndef LINUX_KBHIT_H_
-#define LINUX_KBHIT_H_
-
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-
-int kb_hit(void)
-{
-    struct termios oldt, newt;
-    int ch;
-
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return ch;
-}
-#endif
-
 struct ArpInfo
 {
     const char *dev;
@@ -93,7 +71,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
     const int fragment_size = 1440;
     while (true)
     {
-
         struct pcap_pkthdr *header;
         const u_char *packet;
         int res = pcap_next_ex(pcap, &header, &packet);
@@ -116,11 +93,6 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
 
         for (int i = 0; i < count; i++)
         {
-            if (kb_hit())
-            {
-                request(dev, pcap, targets[i].target_mac, attacker_mac, targets[i].sender_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
-                request(dev, pcap, targets[i].sender_mac, attacker_mac, targets[i].target_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
-            }
             if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, targets[i].target_mac, 6)) && (!memcmp(pkt->arp_.tip, targets[i].sender_ip, 4)))
             {
                 printf("where is sender?\n");
