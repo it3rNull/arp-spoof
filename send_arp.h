@@ -158,11 +158,12 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
                     int i = 0;
                     int flag = 0;
                     sendsize = header->len;
-                    memcpy(data, packet + 34, sendsize - 34);
+                    // memcpy(data, packet + 34, sendsize - 34);
                     //단위 400 434 int i = 0;
                     while (sendsize > fragment_size + 34)
                     {
                         flag = 1;
+                        printf("before");
                         print_mac(attacker_mac);
                         for (int j = 0; j < fragment_size; j++)
                         {
