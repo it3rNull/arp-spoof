@@ -82,6 +82,8 @@ int main(int argc, char *argv[])
 		}
 		else if (todo_choice == 4)
 		{
+			free(targets);
+			pcap_close(pcap);
 			exit(0);
 		}
 	}

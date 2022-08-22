@@ -111,18 +111,15 @@ void sigint_handler(int signo)
 
         if (choice == 1)
         {
+            printf("byebye! \n");
             exit(0);
         }
         else if (choice == 2)
         {
+            printf("continue ... \n");
             return;
         }
     }
-}
-
-void pcap_close(pcap_t *pcap)
-{
-    pcap_close(pcap);
 }
 
 void add_flow(list *targets, int *count)
@@ -154,7 +151,7 @@ void view_flow(list *targets, int count)
 {
     for (int i = 0; i < count; i += 1)
     {
-        printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
+        printf("\n+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
         printf("flow %d info\n", i);
         printf("sender_%d ip addr : ", i);
         print_ip(targets[i].sender_ip);
