@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
 		printf("target mac addr : ");
 		print_mac(targets[i].target_mac);
 		printf("=============================\n\n");
-		request(dev, pcap, sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, 1);
-		request(dev, pcap, target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
+		request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, 1);
+		request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, 1);
 	}
 
 	// request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, target_ip, htons(ArpHdr::Request));
