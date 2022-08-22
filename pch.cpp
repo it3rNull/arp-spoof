@@ -124,3 +124,42 @@ void pcap_close(pcap_t *pcap)
 {
     pcap_close(pcap);
 }
+
+void add_flow(list *targets, int *count)
+{
+    targets = (list *)realloc(targets, sizeof(list) * (*count) + 1);
+    char ip[30];
+    char mac[30];
+    printf("Enter sender ip address: ");
+    scanf("%s", ip);
+    argv_ip(ip, targets[*count].sender_ip);
+    printf("Enter target ip address: ");
+    scanf("%s", ip);
+    argv_ip(ip, targets[*count].target_ip);
+    for (int i = 0; i < *count + 1; i += 1)
+    {
+        printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
+        printf("flow %d info\n", i);
+        printf("sender_%d ip addr : ", i);
+        print_ip(targets[i].sender_ip);
+        printf("target_%d ip addr : ", i);
+        print_ip(targets[i].target_ip);
+        printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
+    }
+
+    (*count)++;
+}
+
+void view_flow(list *targets, int count)
+{
+    for (int i = 0; i < count; i += 1)
+    {
+        printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
+        printf("flow %d info\n", i);
+        printf("sender_%d ip addr : ", i);
+        print_ip(targets[i].sender_ip);
+        printf("target_%d ip addr : ", i);
+        print_ip(targets[i].target_ip);
+        printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
+    }
+}

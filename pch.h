@@ -45,3 +45,4 @@ bool if_same_ip(u_int8_t *mac1, u_int8_t *mac2);
 void print_logo();
 void sigint_handler(int signo);
 void add_flow(list *targets, int *count);
+void view_flow(list *targets, int count);
