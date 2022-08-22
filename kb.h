@@ -1,4 +1,5 @@
-#ifndef LINUX_KBHIT_H_ #define LINUX_KBHIT_H_
+#ifndef LINUX_KBHIT_H_
+#define LINUX_KBHIT_H_
 
 #include <stdio.h>
 #include <termios.h>
