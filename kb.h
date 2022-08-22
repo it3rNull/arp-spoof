@@ -12,4 +12,4 @@ void init_keyboard();
 
 void close_keyboard();
 
-int _kbhit();
+int kbhit();
