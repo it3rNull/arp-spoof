@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
 		reply(dev, pcap, targets[i].target_mac, targets[i].target_ip);
 		request(dev, pcap, broad_mac, attacker_mac, attacker_mac, attacker_ip, empty_mac, targets[i].sender_ip, htons(ArpHdr::Request));
 		reply(dev, pcap, targets[i].sender_mac, targets[i].sender_ip);
+		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
 		printf("flow %d info\n", i);
 		printf("attacker ip addr : ");
 		print_ip(attacker_ip);
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
 		print_mac(targets[i].sender_mac);
 		printf("target mac addr : ");
 		print_mac(targets[i].target_mac);
-		printf("=============================\n\n");
+		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n\n");
 		request(dev, pcap, targets[i].sender_mac, attacker_mac, attacker_mac, targets[i].target_ip, targets[i].sender_mac, targets[i].sender_ip, htons(ArpHdr::Reply));
 		request(dev, pcap, targets[i].target_mac, attacker_mac, attacker_mac, targets[i].sender_ip, targets[i].target_mac, targets[i].target_ip, htons(ArpHdr::Reply));
 	}
