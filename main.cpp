@@ -104,7 +104,7 @@ void add_flow(list *targets, int *count)
 	printf("Enter target ip address: ");
 	scanf("%s", ip);
 	argv_ip(ip, targets[*count].target_ip);
-	for (int i = 0; i < *count; i += 1)
+	for (int i = 0; i < *count + 1; i += 1)
 	{
 		printf("+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+\n");
 		printf("flow %d info\n", i);
